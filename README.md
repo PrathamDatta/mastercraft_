@@ -1,6 +1,6 @@
 # Mastercraft Engineers — website
 
-Static redesign of https://mastercraftengineers.com/ (previously WordPress 5.2.21 + WPBakery + Slider Revolution).
+Static redesign of https://mastercraftengineers.com/ ("Forge" design: original black / white / orange palette, motion-rich) (previously WordPress 5.2.21 + WPBakery + Slider Revolution).
 
 - **Zero runtime dependencies.** Plain HTML/CSS/JS output, plus one Vercel serverless function (`api/contact.js`) for the enquiry form.
 - **Build-time dependencies:** `sharp` (image pipeline), `esbuild` (minify), `axe-core` + Playwright (tests).
