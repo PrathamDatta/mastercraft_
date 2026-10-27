@@ -38,6 +38,11 @@ export function splitWords(text, startIndex = 0) {
   return text.split(' ').map((w, i) => `<span class="w"><span style="--i:${startIndex + i}">${esc(w)}</span></span>`).join(' ');
 }
 
+/** Per-letter split for kinetic headlines (the heading itself carries the accessible name). */
+export function splitChars(text, start = 0) {
+  return [...text].map((c, i) => `<span class="ch" style="--i:${start + i}">${c === ' ' ? '&nbsp;' : esc(c)}</span>`).join('');
+}
+
 export function breadcrumbLd(trail) {
   return {
     '@type': 'BreadcrumbList',
@@ -114,7 +119,7 @@ export function layout({ path: pagePath, title, description, body, ld = [], noin
 <meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${canonical}">
 <meta name="robots" content="${noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large'}">
-<meta name="theme-color" content="#0b0c0e">
+<meta name="theme-color" content="#000000">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${SITE.name}">
 <meta property="og:locale" content="en_IN">
@@ -129,6 +134,7 @@ export function layout({ path: pagePath, title, description, body, ld = [], noin
 <link rel="icon" href="/favicon-192x192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/assets/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/instrument-serif-italic.woff2" as="font" type="font/woff2" crossorigin>
 ${preload.join('\n')}
 <script>${INLINE_JS}</script>
 <link rel="stylesheet" href="/assets/css/main.css?v=${SITE.buildDate}">
@@ -136,6 +142,9 @@ ${preload.join('\n')}
 <script type="application/ld+json">${JSON.stringify(graph)}</script>
 </head>
 <body class="${pageClass}">
+${SPRITE}
+<div class="progress" data-progress aria-hidden="true"></div>
+<div class="cursor" data-cursor aria-hidden="true"><span class="cursor__label"></span></div>
 <a class="skip" href="#main">Skip to main content</a>
 <header class="site-header" data-header data-tone="${headerTone}">
   <div class="container nav-inner">
@@ -153,6 +162,7 @@ ${preload.join('\n')}
 ${body}
 </main>
 <footer class="site-footer">
+  <div class="footer-mark" aria-hidden="true"><span>Mastercraft</span></div>
   <div class="container footer-grid">
     <div class="footer-brand">
       <picture><source type="image/webp" srcset="/assets/img/mastercraft-logo-light.webp"><img src="/assets/img/mastercraft-logo-light.png" width="400" height="106" alt="Mastercraft Engineers" loading="lazy" decoding="async"></picture>
@@ -176,6 +186,12 @@ ${body}
 </body>
 </html>`;
 }
+
+// Logo mark (orange disc with a four-point star cut out), used as a shared SVG symbol.
+export const SPRITE = `<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="mc-mark" viewBox="0 0 100 100"><path fill="currentColor" fill-rule="evenodd" d="M50 0a50 50 0 1 0 .01 0ZM50 7C52 35 65 48 93 50 65 52 52 65 50 93 48 65 35 52 7 50 35 48 48 35 50 7Z"/></symbol></svg>`;
+export const markUse = (cls = '') => `<svg class="mark${cls ? ' ' + cls : ''}" aria-hidden="true" focusable="false"><use href="#mc-mark"/></svg>`;
+/** Rotating circular text badge around the mark. */
+export const badge = (text, cls = '') => `<svg class="badge${cls ? ' ' + cls : ''}" viewBox="0 0 200 200" aria-hidden="true" focusable="false"><defs><path id="bd-circle" d="M100 100m-82 0a82 82 0 1 1 164 0a82 82 0 1 1-164 0"/></defs><text class="badge__ring"><textPath href="#bd-circle" startOffset="0" textLength="508" lengthAdjust="spacing">${esc(text)}</textPath></text><use href="#mc-mark" x="68" y="68" width="64" height="64" class="badge__mark"/></svg>`;
 
 export function breadcrumbHtml(trail) {
   return `<nav class="crumbs" aria-label="Breadcrumb"><ol>${trail.map((t, i) => i === trail.length - 1 ? `<li><span aria-current="page">${esc(t.name)}</span></li>` : `<li><a href="${t.href}">${esc(t.name)}</a></li>`).join('')}</ol></nav>`;

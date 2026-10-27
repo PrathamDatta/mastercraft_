@@ -1,5 +1,5 @@
 import { SITE, PROCESS, ENVELOPES, SMALL_MOULDS, LARGE_MOULDS, COMPONENTS, TWOK } from './data.mjs';
-import { pic, esc, arrow } from './lib.mjs';
+import { pic, esc, arrow, markUse } from './lib.mjs';
 
 // ---------- derived, verified statistics ----------
 export const STATS = (() => {
@@ -21,40 +21,31 @@ export const STATS = (() => {
 
 export const fmt = (n) => String(n);
 
-// ---------- Process: sticky route + steps ----------
+// ---------- Process: stacked card deck (sticky cards that pile up, then release) ----------
 export function processSection({ headingLevel = 2 } = {}) {
-  const ROW = 56;
+  const inspected = new Set(['machining', 'moulding', 'inspection']);
   const n = PROCESS.length;
-  const ys = PROCESS.map((_, i) => ROW / 2 + i * ROW);
-  const H = n * ROW;
-  const q = [3, 5, 6]; // machining, moulding, inspection are linked by the inspection track
-  const route = `<svg class="route" width="120" height="${H}" viewBox="0 0 120 ${H}" aria-hidden="true" focusable="false">
-    <path class="route__base" d="M30 ${ys[0]} V ${ys[n - 1]}"/>
-    <path class="route__prog" id="route-prog" pathLength="1" d="M30 ${ys[0]} V ${ys[n - 1]}"/>
-    <path class="route__q" d="M84 ${ys[q[0]]} V ${ys[q[2]]}" />
-    ${q.map(i => `<path class="route__tick" d="M30 ${ys[i]} H84"/><rect class="route__dia" x="80" y="${ys[i] - 4}" width="8" height="8" transform="rotate(45 84 ${ys[i]})"/>`).join('')}
-    ${ys.map((y, i) => `<circle class="route__node" data-node="${i}" cx="30" cy="${y}" r="7"/>`).join('')}
-    <text class="route__lbl" transform="translate(106 ${(ys[q[0]] + ys[q[2]]) / 2}) rotate(90)" text-anchor="middle">INSPECTION</text>
-  </svg>`;
-  return `<section class="section section--dark process" id="process" aria-labelledby="process-h">
-  <div class="container process__layout">
-    <div class="process__rail" data-process-rail>
+  return `<section class="section section--black deck" id="process" aria-labelledby="process-h" data-deck>
+  <div class="deck__glow" aria-hidden="true"></div>
+  <div class="container">
+    <header class="deck__head">
       <p class="eyebrow"><span class="idx">02</span> Process</p>
-      <h${headingLevel} id="process-h" class="h2">From project planning to inspected parts</h${headingLevel}>
-      <p class="lede lede--sm">Seven stages, each documented on the facilities page. Inspection applies to mould inserts and to the plastic components.</p>
-      <div class="route-wrap">
-        ${route}
-        <ol class="route-legend" style="--row:${ROW}px">${PROCESS.map((s, i) => `<li><a href="#stage-${s.id}" data-stage-link="${i}"><span class="n">${s.n}</span><span class="t">${s.title}</span></a></li>`).join('')}</ol>
-      </div>
-    </div>
-    <ol class="steps" data-steps>
-      ${PROCESS.map((s, i) => `<li class="step" id="stage-${s.id}" data-step="${i}">
-        <figure class="step__fig reveal-mask">${pic(s.img, { sizes: '(min-width: 960px) 52vw, 92vw', maxW: 1200 })}<span class="step__no mono" aria-hidden="true">${s.n}<i>/ ${String(n).padStart(2, '0')}</i></span></figure>
-        <div class="step__body">
-          <p class="mono step__grp">${esc(s.group)}</p>
-          <h3 class="h3">${esc(s.title)}</h3>
-          <p>${esc(s.text)}</p>
-          <dl class="facts">${s.facts.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
+      <h${headingLevel} id="process-h" class="h2">From <em>project planning</em> to inspected parts</h${headingLevel}>
+      <p class="lede">Seven stages, each documented on the facilities page. Inspection applies to mould inserts and to the plastic components.</p>
+      <ul class="deck__jump" aria-label="Jump to a stage">${PROCESS.map(s => `<li><a href="#stage-${s.id}"><span>${s.n}</span>${esc(s.title)}</a></li>`).join('')}</ul>
+    </header>
+    <ol class="deck__list">
+      ${PROCESS.map((s, i) => `<li class="card" id="stage-${s.id}" data-card style="--i:${i}">
+        <div class="card__inner">
+          <div class="card__text">
+            <span class="card__no" aria-hidden="true">${s.n}</span>
+            <p class="mono card__grp">${esc(s.group)}${inspected.has(s.id) ? ' <b class="tag">Inspection point</b>' : ''}</p>
+            <h3 class="h3">${esc(s.title)}</h3>
+            <p class="card__p">${esc(s.text)}</p>
+            <dl class="facts">${s.facts.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
+            <p class="mono card__count">${s.n} <i>/ ${String(n).padStart(2, '0')}</i></p>
+          </div>
+          <figure class="card__fig reveal-mask scan">${pic(s.img, { sizes: '(min-width: 960px) 46vw, 92vw', maxW: 1200 })}</figure>
         </div>
       </li>`).join('')}
     </ol>
@@ -71,7 +62,7 @@ const SPOTS = [
 ];
 export function anatomySection() {
   const W = 1005, H = 701;
-  return `<section class="section section--paper anatomy" id="anatomy" aria-labelledby="anatomy-h">
+  return `<section class="section section--white anatomy" id="anatomy" aria-labelledby="anatomy-h">
   <div class="container">
     <div class="anatomy__head">
       <p class="eyebrow"><span class="idx">A</span> Reading a mould</p>
@@ -163,9 +154,10 @@ export function specTable(item, caption) {
 export function productRow(item, base, i) {
   const href = `${base}${item.slug}/`;
   return `<article class="prow${i % 2 ? ' prow--flip' : ''} reveal" id="${item.slug}">
-    <a class="prow__fig plate reveal-mask" href="${href}" tabindex="-1" aria-hidden="true">${pic(item.img, { sizes: '(min-width: 960px) 46vw, 92vw', maxW: 1200 })}</a>
+    <span class="prow__bignum" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span>
+    <a class="prow__fig plate tilt reveal-mask" href="${href}" tabindex="-1" aria-hidden="true" data-cursor-label="View">${pic(item.img, { sizes: '(min-width: 960px) 46vw, 92vw', maxW: 1200 })}</a>
     <div class="prow__body">
-      <p class="mono prow__no">${String(i + 1).padStart(2, '0')}</p>
+      <p class="mono prow__no">No. ${String(i + 1).padStart(2, '0')}</p>
       <h2 class="h3"><a href="${href}">${esc(item.name)}</a></h2>
       ${specTable(item, `Specification: ${item.name}`)}
       <a class="link-arrow" href="${href}">Specification and enquiry${arrow}<span class="sr-only"> for ${esc(item.name)}</span></a>
@@ -175,6 +167,7 @@ export function productRow(item, base, i) {
 
 export function ctaBand({ title = 'Discuss a mould or component requirement', body = 'Tell us what you want made, the material, the size and the quantities you expect. We will come back to you on whether and how we can help.', ref = '' } = {}) {
   return `<section class="cta" aria-labelledby="cta-h">
+  <div class="cta__bg" aria-hidden="true">${markUse('cta__mark')}</div>
   <div class="container cta__inner">
     <div>
       <p class="eyebrow eyebrow--ink">Start a project</p>
@@ -182,7 +175,7 @@ export function ctaBand({ title = 'Discuss a mould or component requirement', bo
       <p class="lede">${esc(body)}</p>
     </div>
     <div class="cta__actions">
-      <a class="btn btn--ink btn--lg" href="/contact/${ref ? `?ref=${encodeURIComponent(ref)}` : ''}">Open the enquiry form ${arrow}</a>
+      <a class="btn btn--ink btn--lg magnetic" href="/contact/${ref ? `?ref=${encodeURIComponent(ref)}` : ''}"><span>Open the enquiry form</span> ${arrow}</a>
       <ul class="cta__contacts">
         <li><span class="mono">Phone</span> ${SITE.phones.map(p => `<a href="tel:${p.tel}">${p.display}</a>`).join(' · ')}</li>
         <li><span class="mono">Email</span> <a href="mailto:${SITE.email}">${SITE.email}</a></li>

@@ -1,15 +1,15 @@
 import { SITE, FAQ, GLOSSARY, PROCESS, LARGE_MOULDS, SMALL_MOULDS, COMPONENTS, TWOK } from './data.mjs';
-import { layout, pic, esc, splitWords, orgLd, websiteLd, breadcrumbLd, breadcrumbHtml, arrow, imgUrl, MANIFEST } from './lib.mjs';
+import { layout, pic, esc, splitWords, splitChars, orgLd, websiteLd, breadcrumbLd, breadcrumbHtml, arrow, imgUrl, MANIFEST, markUse, badge } from './lib.mjs';
 import { STATS, processSection, anatomySection, envelopeSection, rangeRulers, ctaBand } from './components.mjs';
 
 const faqLd = () => ({ '@type': 'FAQPage', mainEntity: FAQ.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) });
 
 export function faqSection(id = 'faq') {
-  return `<section class="section section--paper faq" id="${id}" aria-labelledby="${id}-h">
+  return `<section class="section section--white faq" id="${id}" aria-labelledby="${id}-h">
   <div class="container faq__layout">
     <div>
       <p class="eyebrow"><span class="idx">05</span> Questions</p>
-      <h2 id="${id}-h" class="h2">Procurement questions, answered from our own records</h2>
+      <h2 id="${id}-h" class="h2">Procurement questions, answered from <em>our own records</em></h2>
       <p class="lede lede--sm">Every answer here repeats information published on this site. If your question is not covered, <a href="/contact/">ask us directly</a>.</p>
     </div>
     <div class="faq__list">
@@ -20,46 +20,36 @@ export function faqSection(id = 'faq') {
 }
 
 // ================= HOME =================
+const MARQUEE = ['CAD design', 'CAM programming', '5-axis machining', 'Wire EDM', 'CNC EDM', 'Mould assembly', 'Injection moulding', 'CMM inspection', 'MFI testing', 'SPC monitoring'];
+const marqueeRow = (hidden) => `<ul class="marquee__row"${hidden ? ' aria-hidden="true"' : ''}>${MARQUEE.map(t => `<li>${esc(t)}<svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><use href="#mc-mark"/></svg></li>`).join('')}</ul>`;
+
 export function homePage() {
-  const heroPre = [`<link rel="preload" as="image" type="image/avif" imagesrcset="${MANIFEST.machining5.widths.filter(w => w >= 480).map(w => `${imgUrl('machining5', w, 'avif')} ${w}w`).join(', ')}" imagesizes="(min-width: 960px) 58vw, 100vw" fetchpriority="high">`];
+  const heroPre = [`<link rel="preload" as="image" type="image/avif" imagesrcset="${MANIFEST.machining5.widths.filter(w => w >= 480).map(w => `${imgUrl('machining5', w, 'avif')} ${w}w`).join(', ')}" imagesizes="100vw" fetchpriority="high">`];
   const body = `
-<section class="hero" id="top" aria-labelledby="hero-h">
-  <div class="hero__lines" aria-hidden="true"></div>
-  <div class="container hero__inner">
-    <div class="hero__copy">
-      <p class="eyebrow hero__eyebrow"><span class="dot"></span> Precision mould makers · Bengaluru · Since ${SITE.founded}</p>
-      <h1 id="hero-h" class="display hero__h">${splitWords('Precision mould engineering, from concept to finished component.')}</h1>
-      <p class="lede hero__lede">Mastercraft Engineers designs and builds precision injection moulds, small and large, and moulds plastic components at its facility in the Bommasandra Industrial Area, Bengaluru.</p>
-      <div class="hero__cta">
-        <a class="btn btn--primary btn--lg" href="/contact/">Discuss your project ${arrow}</a>
-        <a class="btn btn--ghost btn--lg" href="#process">See how we work</a>
-      </div>
-    </div>
-    <figure class="hero__figure">
-      <div class="hero__frame" data-parallax="0.06">
-        ${pic('machining5', { eager: true, sizes: '(min-width: 960px) 58vw, 100vw', maxW: 1600, alt: 'Milling head cutting a clamped workpiece on a machine table, with blue coolant hoses' })}
-        <div class="hero__curtain" aria-hidden="true"></div>
-        <svg class="hero__svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-          <polyline class="lead l1" points="43,22 52,10 62,10" />
-          <polyline class="lead l2" points="43,52 62,52" />
-          <polyline class="lead l3" points="57,75 61,90 65,90" />
-          
-        </svg>
-        <span class="hero__dot" style="left:43%;top:22%" aria-hidden="true"></span>
-        <span class="hero__dot" style="left:43%;top:52%" aria-hidden="true"></span>
-        <span class="hero__dot" style="left:57%;top:75%" aria-hidden="true"></span>
-        <span class="callout mono" style="left:62.5%;top:10%">Spindle and cutting tool</span>
-        <span class="callout mono" style="left:62.5%;top:52%">Workpiece in clamping fixture</span>
-        <span class="callout mono" style="left:65.5%;top:90%">Coolant delivery</span>
-        <span class="crop crop--tl" aria-hidden="true"></span><span class="crop crop--br" aria-hidden="true"></span>
-      </div>
-      <div class="hero__inset" data-parallax="-0.04">
-        ${pic('machining6', { eager: false, sizes: '(min-width: 960px) 20vw, 40vw', maxW: 800, alt: 'Cutting tool held in front of an optical measuring arm for tool measurement' })}
-        <span class="mono hero__inset-cap">Tool measurement</span>
-      </div>
-      <figcaption class="hero__cap mono"><span>FIG. 01</span> Machining centres: 5-axis, 600 × 400 mm stroke · 3-axis, 900 mm to 700 mm · Wire EDM 500 × 350 mm · CNC EDM 500 × 400 mm</figcaption>
-    </figure>
+<section class="hero" id="top" aria-labelledby="hero-h" data-hero>
+  <div class="hero__bg" aria-hidden="false">
+    ${pic('machining5', { eager: true, sizes: '100vw', maxW: 1600, alt: 'Milling head cutting a clamped workpiece on a machine table, with blue coolant hoses', cls: 'hero__base' })}
+    ${pic('machining5', { sizes: '100vw', maxW: 1600, decorative: true, cls: 'hero__color' })}
   </div>
+  <div class="hero__shade" aria-hidden="true"></div>
+  <div class="hero__glow" aria-hidden="true"><i></i><i></i></div>
+  <div class="hero__scan" aria-hidden="true"></div>
+  <div class="container hero__inner">
+    <p class="eyebrow hero__eyebrow"><span class="dot"></span> Precision mould makers · Bengaluru · Since ${SITE.founded}</p>
+    <h1 id="hero-h" class="hero__h" aria-label="Precision mould engineering, from concept to finished component."><span aria-hidden="true"><span class="hero__k">${splitChars('Precision')}</span><span class="hero__s"><em>mould engineering,</em></span><span class="hero__t">from concept to finished component.</span></span></h1>
+    <p class="lede hero__lede">Mastercraft Engineers designs and builds precision injection moulds, small and large, and moulds plastic components at its facility in the Bommasandra Industrial Area, Bengaluru.</p>
+    <div class="hero__cta">
+      <a class="btn btn--primary btn--lg magnetic" href="/contact/"><span>Discuss your project</span> ${arrow}</a>
+      <a class="btn btn--ghost btn--lg magnetic" href="#process"><span>See how we work</span></a>
+    </div>
+  </div>
+  <div class="hero__chips" aria-hidden="true">
+    <span class="chip chip--a" data-depth="0.5"><b>45–150 t</b> clamping</span>
+    <span class="chip chip--b" data-depth="0.9"><b>0.5–300 g</b> parts</span>
+    <span class="chip chip--c" data-depth="0.7"><b>${STATS.largeMin}–${STATS.largeMax} t</b> moulds</span>
+  </div>
+  ${badge('Precision injection moulds · Bengaluru · Since 1992 · ', 'hero__badge')}
+  <a class="scroll-cue" href="#company" aria-label="Scroll to company introduction"><span></span></a>
   <ul class="container hero__facts" aria-label="Company facts">
     <li><strong>${SITE.founded}</strong><span>Mould making and moulding since</span></li>
     <li><strong>Bengaluru</strong><span>Bommasandra Industrial Area</span></li>
@@ -68,19 +58,25 @@ export function homePage() {
   </ul>
 </section>
 
-<section class="section section--paper intro" id="company" aria-labelledby="company-h">
+<section class="marquee" aria-label="Capabilities">
+  <div class="marquee__track" data-marquee>${marqueeRow(false)}${marqueeRow(true)}</div>
+</section>
+
+<section class="section section--white intro" id="company" aria-labelledby="company-h">
+  <div class="intro__ghost" aria-hidden="true"><span data-fill>${SITE.founded}</span></div>
   <div class="container">
+    <p class="eyebrow"><span class="idx">01</span> Company</p>
+    <h2 id="company-h" class="display display--md intro__h">Specialised in <em>precision</em> mould making and moulding since ${SITE.founded}.</h2>
     <div class="intro__grid">
       <div class="intro__text">
-        <p class="eyebrow"><span class="idx">01</span> Company</p>
-        <h2 id="company-h" class="display display--md">Specialised in precision mould making and moulding since ${SITE.founded}.</h2>
         <p class="lede">Mastercraft is based in Bangalore, South India. A modern design and manufacturing facility, a highly specialised technical team and advanced communication systems provide the conditions for efficient and reliable development of customer projects, from concept to finish.</p>
         <p>Satisfying customers in every way remains the primary goal: building moulds and moulding components that rank high in quality at competitive costs. The company aims to be the moulder of your creation.</p>
         <blockquote class="vision"><p class="mono">Our vision</p><p>We will be the leader, setting standards in every domain that our business will be in, by delivering on time products and services of high quality, by leveraging technology, with the best-in-class people, eventually adding value to our customers’ businesses.</p></blockquote>
         <a class="link-arrow" href="/about/">About Mastercraft${arrow}</a>
       </div>
-      <figure class="intro__fig reveal-mask">
-        ${pic('campus', { sizes: '(min-width: 960px) 52vw, 92vw', maxW: 1600 })}
+      <figure class="intro__fig">
+        <div class="intro__img reveal-mask" data-parallax-y="-40">${pic('campus', { sizes: '(min-width: 960px) 52vw, 92vw', maxW: 1600 })}</div>
+        ${markUse('intro__mark')}
         <figcaption class="mono">The Mastercraft Engineers facility, Bommasandra Industrial Area, Bengaluru (aerial view)</figcaption>
       </figure>
     </div>
@@ -88,61 +84,79 @@ export function homePage() {
     <div class="chain" aria-labelledby="chain-h">
       <h3 id="chain-h" class="mono chain__h">Design, tooling and product — one line of work</h3>
       <ol class="chain__list">
-        <li class="reveal"><figure class="plate plate--dark">${pic('camToolpath', { sizes: '(min-width: 960px) 30vw, 92vw', maxW: 1200, alt: 'CAM simulation showing machining toolpaths over a mould block' })}</figure><p class="mono">01 · Design and toolpaths</p><p>CAD designs and CAM toolpaths define how the mould is cut.</p></li>
-        <li class="chain__arrow" aria-hidden="true"><svg viewBox="0 0 60 20" width="60" height="20"><path d="M0 10h54M46 3l8 7-8 7" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></li>
-        <li class="reveal"><figure class="plate">${pic('mouldSmall2', { sizes: '(min-width: 960px) 30vw, 92vw', maxW: 1200, alt: 'Opened injection mould for a base plate with a four-drop hot runner' })}</figure><p class="mono">02 · The mould</p><p>Machined, assembled and mounted on an injection moulding machine.</p></li>
-        <li class="chain__arrow" aria-hidden="true"><svg viewBox="0 0 60 20" width="60" height="20"><path d="M0 10h54M46 3l8 7-8 7" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></li>
-        <li class="reveal"><figure class="plate">${pic('componentsHero', { sizes: '(min-width: 960px) 30vw, 92vw', maxW: 1200 })}</figure><p class="mono">03 · The component</p><p>Plastic parts moulded in production and inspected.</p></li>
+        <li class="reveal"><figure class="plate plate--dark tilt">${pic('camToolpath', { sizes: '(min-width: 960px) 30vw, 92vw', maxW: 1200, alt: 'CAM simulation showing machining toolpaths over a mould block' })}</figure><p class="mono">01 · Design and toolpaths</p><p>CAD designs and CAM toolpaths define how the mould is cut.</p></li>
+        <li class="chain__arrow" aria-hidden="true"><svg viewBox="0 0 60 20" width="60" height="20"><path d="M0 10h54M46 3l8 7-8 7" fill="none" stroke="currentColor" stroke-width="2"/></svg></li>
+        <li class="reveal"><figure class="plate tilt">${pic('mouldSmall2', { sizes: '(min-width: 960px) 30vw, 92vw', maxW: 1200, alt: 'Opened injection mould for a base plate with a four-drop hot runner' })}</figure><p class="mono">02 · The mould</p><p>Machined, assembled and mounted on an injection moulding machine.</p></li>
+        <li class="chain__arrow" aria-hidden="true"><svg viewBox="0 0 60 20" width="60" height="20"><path d="M0 10h54M46 3l8 7-8 7" fill="none" stroke="currentColor" stroke-width="2"/></svg></li>
+        <li class="reveal"><figure class="plate tilt">${pic('componentsHero', { sizes: '(min-width: 960px) 30vw, 92vw', maxW: 1200 })}</figure><p class="mono">03 · The component</p><p>Plastic parts moulded in production and inspected.</p></li>
       </ol>
     </div>
   </div>
 </section>
 
-${processSection()}
-
-<section class="section section--paper products" id="products" aria-labelledby="products-h">
-  <div class="container">
-    <div class="products__head">
-      <p class="eyebrow"><span class="idx">03</span> Products</p>
-      <h2 id="products-h" class="display display--md">Moulds and moulded parts, documented to the millimetre and the gram.</h2>
-    </div>
-    <div class="pgrid">
-      <a class="ptile ptile--a reveal" href="/large-size-injection-moulds/">
-        <div class="plate reveal-mask">${pic('frDoorTrim', { sizes: '(min-width: 960px) 56vw, 92vw', maxW: 1600 })}</div>
-        <div class="ptile__body"><p class="mono">Large injection moulds</p><h3 class="h3">Moulds from ${STATS.largeMin} to ${STATS.largeMax} tonnes</h3><p>${STATS.largeCount} documented moulds for door trims, pillars, a cowl, a side sill and wheel arches, with hot-runner configurations of up to six drops.</p><span class="link-arrow">View the large moulds${arrow}</span></div>
-      </a>
-      <a class="ptile ptile--b reveal" href="/injection-moulds/">
-        <div class="plate reveal-mask">${pic('mouldSmall1', { sizes: '(min-width: 960px) 36vw, 92vw', maxW: 1200 })}</div>
-        <div class="ptile__body"><p class="mono">Small precision injection moulds</p><h3 class="h3">From two cavities to ${STATS.maxCavities}</h3><p>${STATS.smallCount} documented moulds with size, cavity count and material.</p><span class="link-arrow">View the small moulds${arrow}</span></div>
-      </a>
-      <a class="ptile ptile--c reveal" href="/components/">
-        <div class="plate reveal-mask">${pic('componentsHero', { sizes: '(min-width: 960px) 36vw, 92vw', maxW: 1200 })}</div>
-        <div class="ptile__body"><p class="mono">Plastic injection-moulded components</p><h3 class="h3">${STATS.partCount} parts, ${STATS.partMin} – ${STATS.partMax} g</h3><p>Part weights and raw materials, including POM, PC, PP and glass-filled polyamides.</p><span class="link-arrow">View the components${arrow}</span></div>
-      </a>
-      <a class="ptile ptile--d reveal" href="/2k-parts/">
-        <div class="plate reveal-mask">${pic('hvacFlap', { sizes: '(min-width: 960px) 56vw, 92vw', maxW: 1200 })}</div>
-        <div class="ptile__body"><p class="mono">Two-component (2K) parts</p><h3 class="h3">Two materials in one part</h3><p>${STATS.twokCount} documented parts, such as PPGF40 + TPE and PCABS + TPE combinations.</p><span class="link-arrow">View the 2K parts${arrow}</span></div>
-      </a>
-    </div>
+<section class="stats" aria-label="Capacity and range, as documented">
+  <div class="container stats__grid">
+    <div class="stat"><p class="stat__n"><span data-count-to="45">45</span><i>–</i><span data-count-to="150">150</span><small>t</small></p><p class="stat__l">Injection moulding clamping capacity</p></div>
+    <div class="stat"><p class="stat__n"><span data-count-to="0.5" data-dec="1">0.5</span><i>–</i><span data-count-to="300">300</span><small>g</small></p><p class="stat__l">Moulded part weight range</p></div>
+    <div class="stat"><p class="stat__n"><span data-count-to="${STATS.largeCount}">${STATS.largeCount}</span></p><p class="stat__l">Large injection moulds documented</p></div>
+    <div class="stat"><p class="stat__n"><span data-count-to="${STATS.largeMin}" data-dec="1">${STATS.largeMin}</span><i>–</i><span data-count-to="${STATS.largeMax}" data-dec="1">${STATS.largeMax}</span><small>t</small></p><p class="stat__l">Documented large mould weights</p></div>
   </div>
 </section>
 
-<section class="section section--dark qteaser" id="quality" aria-labelledby="quality-h">
+${processSection()}
+
+<section class="section section--white products" id="products" aria-labelledby="products-h">
+  <div class="container products__head">
+    <div>
+      <p class="eyebrow"><span class="idx">03</span> Products</p>
+      <h2 id="products-h" class="display display--md">Moulds and moulded parts, <em>documented</em> to the millimetre and the gram.</h2>
+    </div>
+    <div class="rail__ctrl" aria-label="Scroll products">
+      <button type="button" class="rail__btn" data-rail-prev aria-label="Previous products"><svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true"><path d="M18 6H2M7 1L2 6l5 5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+      <button type="button" class="rail__btn" data-rail-next aria-label="Next products"><svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true"><path d="M0 6h16M11 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+    </div>
+  </div>
+  <div class="rail" data-rail role="region" aria-label="Product categories (scrollable)" tabindex="0">
+    <a class="pcard tilt" href="/large-size-injection-moulds/" data-cursor-label="View">
+      <div class="plate">${pic('frDoorTrim', { sizes: '(min-width: 960px) 40vw, 82vw', maxW: 1200 })}</div>
+      <div class="pcard__body"><span class="pcard__n" aria-hidden="true">01</span><p class="mono">Large injection moulds</p><h3 class="h3">Moulds from ${STATS.largeMin} to ${STATS.largeMax} tonnes</h3><p>${STATS.largeCount} documented moulds for door trims, pillars, a cowl, a side sill and wheel arches, with hot-runner configurations of up to six drops.</p><span class="link-arrow">View the large moulds${arrow}</span></div>
+    </a>
+    <a class="pcard tilt" href="/injection-moulds/" data-cursor-label="View">
+      <div class="plate">${pic('mouldSmall1', { sizes: '(min-width: 960px) 40vw, 82vw', maxW: 1200 })}</div>
+      <div class="pcard__body"><span class="pcard__n" aria-hidden="true">02</span><p class="mono">Small precision injection moulds</p><h3 class="h3">From two cavities to ${STATS.maxCavities}</h3><p>${STATS.smallCount} documented moulds with size, cavity count and material.</p><span class="link-arrow">View the small moulds${arrow}</span></div>
+    </a>
+    <a class="pcard tilt" href="/components/" data-cursor-label="View">
+      <div class="plate">${pic('componentsHero', { sizes: '(min-width: 960px) 40vw, 82vw', maxW: 1200 })}</div>
+      <div class="pcard__body"><span class="pcard__n" aria-hidden="true">03</span><p class="mono">Plastic injection-moulded components</p><h3 class="h3">${STATS.partCount} parts, ${STATS.partMin} – ${STATS.partMax} g</h3><p>Part weights and raw materials, including POM, PC, PP and glass-filled polyamides.</p><span class="link-arrow">View the components${arrow}</span></div>
+    </a>
+    <a class="pcard tilt" href="/2k-parts/" data-cursor-label="View">
+      <div class="plate">${pic('hvacFlap', { sizes: '(min-width: 960px) 40vw, 82vw', maxW: 1200 })}</div>
+      <div class="pcard__body"><span class="pcard__n" aria-hidden="true">04</span><p class="mono">Two-component (2K) parts</p><h3 class="h3">Two materials in one part</h3><p>${STATS.twokCount} documented parts, such as PPGF40 + TPE and PCABS + TPE combinations.</p><span class="link-arrow">View the 2K parts${arrow}</span></div>
+    </a>
+  </div>
+  <div class="container"><div class="rail__bar" aria-hidden="true"><i data-rail-bar></i></div></div>
+</section>
+
+<section class="section section--black qteaser" id="quality" aria-labelledby="quality-h">
+  <div class="kinetic" aria-hidden="true">
+    <div class="kinetic__row" data-kinetic="-1"><span>Moulding the future…</span><span>Moulding the future…</span></div>
+    <div class="kinetic__row kinetic__row--o" data-kinetic="1"><span>your way</span><span>your way</span><span>your way</span></div>
+  </div>
   <div class="container qteaser__grid">
     <div class="qteaser__text">
       <p class="eyebrow"><span class="idx">04</span> Quality</p>
-      <h2 id="quality-h" class="display display--md">Inspected against design intent.</h2>
+      <h2 id="quality-h" class="display display--md">Inspected against <em>design intent.</em></h2>
       <p class="lede">Mould inserts and plastic components are inspected to ensure they meet the design intent and customer expectations.</p>
       <ul class="methods">
-        <li><strong>CMM touch probe, video and laser measurement</strong><span>Dimensional inspection of mould inserts and components.</span></li>
-        <li><strong>MFI testing machine</strong><span>Melt flow index testing of plastic material.</span></li>
-        <li><strong>Statistical Process Control</strong><span>Injection moulding is monitored with SPC techniques on an hourly basis.</span></li>
+        <li><span class="methods__n" aria-hidden="true">01</span><div><strong>CMM touch probe, video and laser measurement</strong><span>Dimensional inspection of mould inserts and components.</span></div></li>
+        <li><span class="methods__n" aria-hidden="true">02</span><div><strong>MFI testing machine</strong><span>Melt flow index testing of plastic material.</span></div></li>
+        <li><span class="methods__n" aria-hidden="true">03</span><div><strong>Statistical Process Control</strong><span>Injection moulding is monitored with SPC techniques on an hourly basis.</span></div></li>
       </ul>
       <a class="link-arrow link-arrow--light" href="/quality/">Quality and testing${arrow}</a>
     </div>
     <div class="qteaser__fig">
-      <figure class="reveal-mask q1">${pic('qualityCmm', { sizes: '(min-width: 960px) 28vw, 60vw', maxW: 1200 })}<figcaption class="mono">CMM touch probe</figcaption></figure>
-      <figure class="reveal-mask q2">${pic('qualityMfi', { sizes: '(min-width: 960px) 22vw, 50vw', maxW: 800 })}<figcaption class="mono">MFI testing machine</figcaption></figure>
+      <figure class="reveal-mask scan q1 tilt">${pic('qualityCmm', { sizes: '(min-width: 960px) 28vw, 60vw', maxW: 1200 })}<figcaption class="mono">CMM touch probe</figcaption></figure>
+      <figure class="reveal-mask scan q2 tilt">${pic('qualityMfi', { sizes: '(min-width: 960px) 22vw, 50vw', maxW: 800 })}<figcaption class="mono">MFI testing machine</figcaption></figure>
     </div>
   </div>
 </section>
@@ -164,6 +178,7 @@ export function aboutPage() {
   const a = SITE.address;
   const body = `
 <section class="page-hero page-hero--dark">
+  <div class="page-hero__fx" aria-hidden="true"><i></i>${markUse('ph-mark')}</div>
   <div class="container">
     ${breadcrumbHtml(trail)}
     <p class="eyebrow">About Mastercraft</p>
@@ -171,7 +186,7 @@ export function aboutPage() {
     <p class="lede">Mastercraft Engineers Pvt. Ltd. is based in Bangalore, South India, and takes customer projects from concept to finish: mould design, machining, assembly, injection moulding and inspection.</p>
   </div>
 </section>
-<section class="section section--paper">
+<section class="section section--white">
   <div class="container about__grid">
     <div class="prose">
       <h2 class="h2">How the company describes its work</h2>
@@ -214,7 +229,7 @@ export function aboutPage() {
     </div>
   </div>
 </section>
-<section class="section section--paper">
+<section class="section section--white">
   <div class="container">
     <figure class="wide-fig reveal-mask">${pic('campus', { sizes: '100vw', maxW: 2200 })}<figcaption class="mono">Aerial view of the facility, Bommasandra Industrial Area, Bengaluru</figcaption></figure>
   </div>
@@ -233,6 +248,7 @@ export function facilitiesPage() {
   const gal = [['machining2', 'Machining centre spindle and rotary fixture'], ['machining3', 'CNC machine carriage and control panel'], ['machining4', 'Mould plate clamped in a machine bed'], ['machining5', 'Milling a clamped workpiece'], ['machining6', 'Tool measurement']];
   const body = `
 <section class="page-hero page-hero--dark">
+  <div class="page-hero__fx" aria-hidden="true"><i></i>${markUse('ph-mark')}</div>
   <div class="container">
     ${breadcrumbHtml(trail)}
     <p class="eyebrow">Facilities and capabilities</p>
@@ -242,7 +258,7 @@ export function facilitiesPage() {
   </div>
 </section>
 
-<section class="section section--paper fac" id="design" aria-labelledby="design-h">
+<section class="section section--white fac" id="design" aria-labelledby="design-h">
   <div class="container fac__grid">
     <div class="fac__text">
       <p class="eyebrow"><span class="idx">01</span> Design and engineering</p>
@@ -285,7 +301,7 @@ export function facilitiesPage() {
   </div>
 </section>
 
-<section class="section section--paper fac" id="assembly" aria-labelledby="assembly-h">
+<section class="section section--white fac" id="assembly" aria-labelledby="assembly-h">
   <div class="container fac__grid fac__grid--rev">
     <div class="fac__text">
       <p class="eyebrow"><span class="idx">03</span> Mould assembly</p>
@@ -297,7 +313,7 @@ export function facilitiesPage() {
   </div>
 </section>
 
-<section class="section section--ink2 fac" id="moulding" aria-labelledby="moulding-h">
+<section class="section section--black fac" id="moulding" aria-labelledby="moulding-h">
   <div class="container">
     <div class="fac__head">
       <p class="eyebrow"><span class="idx">04</span> Injection moulding</p>
@@ -309,7 +325,7 @@ export function facilitiesPage() {
   </div>
 </section>
 
-<section class="section section--paper fac" id="inspection" aria-labelledby="inspection-h">
+<section class="section section--white fac" id="inspection" aria-labelledby="inspection-h">
   <div class="container fac__grid">
     <div class="fac__text">
       <p class="eyebrow"><span class="idx">05</span> Quality and testing</p>
@@ -337,6 +353,7 @@ export function qualityPage() {
   const trail = [{ name: 'Home', href: '/' }, { name: 'Quality and testing', href: '/quality/' }];
   const body = `
 <section class="page-hero page-hero--dark">
+  <div class="page-hero__fx" aria-hidden="true"><i></i>${markUse('ph-mark')}</div>
   <div class="container">
     ${breadcrumbHtml(trail)}
     <p class="eyebrow">Quality and testing</p>
@@ -345,7 +362,7 @@ export function qualityPage() {
   </div>
 </section>
 
-<section class="section section--paper qrows">
+<section class="section section--white qrows">
   <div class="container">
     <article class="qrow reveal">
       <figure class="reveal-mask">${pic('qualityCmm', { sizes: '(min-width: 960px) 50vw, 92vw', maxW: 1600 })}<figcaption class="mono">CMM with touch probe</figcaption></figure>
@@ -391,7 +408,7 @@ export function qualityPage() {
   </div>
 </section>
 
-<section class="section section--paper" aria-labelledby="gloss-h">
+<section class="section section--white" aria-labelledby="gloss-h">
   <div class="container gloss">
     <h2 id="gloss-h" class="h2">Terms used on this site</h2>
     <dl class="gloss__list">${GLOSSARY.map(([t, d]) => `<div><dt>${esc(t)}</dt><dd>${esc(d)}</dd></div>`).join('')}</dl>

@@ -1,5 +1,5 @@
 import { SITE, SMALL_MOULDS, LARGE_MOULDS, COMPONENTS, TWOK } from './data.mjs';
-import { layout, pic, esc, splitWords, orgLd, breadcrumbLd, breadcrumbHtml, arrow, abs, imgFallback } from './lib.mjs';
+import { layout, pic, esc, splitWords, orgLd, breadcrumbLd, breadcrumbHtml, arrow, abs, imgFallback, markUse } from './lib.mjs';
 import { STATS, anatomySection, weightChart, productRow, specTable, ctaBand } from './components.mjs';
 
 export const CATEGORIES = {
@@ -30,6 +30,7 @@ function itemListLd(cat) {
 
 function head(trail, eyebrow, h1, lede) {
   return `<section class="page-hero page-hero--dark">
+  <div class="page-hero__fx" aria-hidden="true"><i></i>${markUse('ph-mark')}</div>
   <div class="container">
     ${breadcrumbHtml(trail)}
     <p class="eyebrow">${eyebrow}</p>
@@ -45,7 +46,7 @@ export function smallMouldsPage() {
   const trail = [{ name: 'Home', href: '/' }, { name: cat.name, href: cat.base }];
   const body = `${head(trail, 'Products', 'Small precision injection moulds', `Compact production tools, from two-cavity moulds for battery lids to a ${STATS.maxCavities}-cavity mould for telephone socket parts. Each entry lists mould size, cavities, hot-runner configuration where documented, part size and plastic material.`)}
 ${anatomySection()}
-<section class="section section--paper plist" aria-labelledby="list-h">
+<section class="section section--white plist" aria-labelledby="list-h">
   <div class="container">
     <h2 id="list-h" class="h2">${STATS.smallCount} documented moulds</h2>
     <div class="plist__items">${cat.items.map((it, i) => productRow(it, cat.base, i)).join('')}</div>
@@ -66,7 +67,7 @@ export function largeMouldsPage() {
   const trail = [{ name: 'Home', href: '/' }, { name: cat.name, href: cat.base }];
   const sorted = [...cat.items];
   const body = `${head(trail, 'Products', 'Large injection moulds', `Moulds from ${STATS.largeMin} to ${STATS.largeMax} tonnes for large plastic parts: door trims, pillars, a cowl, a side sill and wheel arches among them. Hot-runner configurations of up to six drops are documented.`)}
-<section class="section section--ink2" aria-labelledby="chart-h">
+<section class="section section--black" aria-labelledby="chart-h">
   <div class="container chart-grid">
     <div>
       <p class="eyebrow"><span class="idx">A</span> Range</p>
@@ -76,7 +77,7 @@ export function largeMouldsPage() {
     ${weightChart()}
   </div>
 </section>
-<section class="section section--paper" aria-labelledby="idx-h">
+<section class="section section--white" aria-labelledby="idx-h">
   <div class="container">
     <h2 id="idx-h" class="h2">Specification index</h2>
     <div class="table-wrap" tabindex="0" role="region" aria-label="Large mould specifications (scrollable table)">
@@ -85,7 +86,7 @@ export function largeMouldsPage() {
       <tbody>${sorted.map(m => { const g = (l) => m.specs.find(s => s.label === l)?.value ?? '—'; return `<tr><th scope="row"><a href="${cat.base}${m.slug}/">${esc(m.name)}</a></th><td>${esc(g('Mould size').replace(' mm', ''))}</td><td>${esc(g('Mould weight'))}</td><td>${esc(g('Hot runner (HRS)'))}</td><td>${esc(g('Part size').replace(' mm', ''))}</td><td>${esc(g('Part weight'))}</td><td>${esc(g('Plastic raw material'))}</td></tr>`; }).join('')}</tbody></table></div>
   </div>
 </section>
-<section class="section section--paper gridlist" aria-labelledby="gal-h">
+<section class="section section--white gridlist" aria-labelledby="gal-h">
   <div class="container">
     <h2 id="gal-h" class="h2">Mould photographs</h2>
     <ul class="mgrid">${cat.items.map((m, i) => `<li class="reveal"><a href="${cat.base}${m.slug}/"><figure class="plate">${pic(m.img, { sizes: '(min-width: 960px) 30vw, (min-width: 600px) 46vw, 92vw', maxW: 800 })}</figure><span class="mono">${esc(m.specs.find(s => s.label === 'Mould weight').value)}</span><span class="mgrid__t">${esc(m.name)}</span></a></li>`).join('')}</ul>
@@ -106,7 +107,7 @@ export function componentsPage() {
   const trail = [{ name: 'Home', href: '/' }, { name: cat.name, href: cat.base }];
   const mats = [...new Set(cat.items.flatMap(c => c.items.map(i => i.material)).filter(Boolean))];
   const body = `${head(trail, 'Products', 'Plastic injection-moulded components', `Small precision parts moulded at Mastercraft, from ${STATS.partMin} g clips to ${STATS.partMax} g housings, each with its plastic raw material documented.`)}
-<section class="section section--ink2" aria-labelledby="mat-h">
+<section class="section section--black" aria-labelledby="mat-h">
   <div class="container chart-grid">
     <div>
       <p class="eyebrow"><span class="idx">A</span> Materials</p>
@@ -116,7 +117,7 @@ export function componentsPage() {
     <ul class="chips">${mats.map(m => `<li>${esc(m)}</li>`).join('')}</ul>
   </div>
 </section>
-<section class="section section--paper plist" aria-labelledby="list-h">
+<section class="section section--white plist" aria-labelledby="list-h">
   <div class="container">
     <h2 id="list-h" class="h2">${cat.items.length} part groups, ${STATS.partCount} parts</h2>
     <div class="plist__items">${cat.items.map((it, i) => productRow(it, cat.base, i)).join('')}</div>
@@ -136,7 +137,7 @@ export function twokPage() {
   const cat = CATEGORIES.twok;
   const trail = [{ name: 'Home', href: '/' }, { name: cat.name, href: cat.base }];
   const body = `${head(trail, 'Products', 'Two-component (2K) parts', 'Parts moulded from two materials in one part, documented with cavity count, material combination and weight.')}
-<section class="section section--paper plist" aria-labelledby="list-h">
+<section class="section section--white plist" aria-labelledby="list-h">
   <div class="container">
     <h2 id="list-h" class="h2">${STATS.twokCount} documented 2K parts</h2>
     <div class="plist__items">${cat.items.map((it, i) => productRow(it, cat.base, i)).join('')}</div>
@@ -186,18 +187,22 @@ export function detailPage(catKey, it, idx) {
   if (title.length > 66) title = `${it.name} | Mastercraft`;
   let desc = sentence.length < 110 ? `${sentence} Specification from Mastercraft Engineers, Bengaluru.` : sentence;
   if (desc.length > 158) desc = desc.slice(0, 155).replace(/\s+\S*$/, '') + '…';
+  const hlOrder = ['Mould weight', 'Cavities', 'Hot runner (HRS)', 'Part weight', 'Plastic raw material', 'Plastic material'];
+  const hl = hlOrder.map(l => it.specs.find(x => x.label === l)).filter(Boolean).slice(0, 3);
   const body = `
 <section class="page-hero page-hero--dark page-hero--detail">
+  <div class="page-hero__fx" aria-hidden="true"><i></i>${markUse('ph-mark')}</div>
   <div class="container">
     ${breadcrumbHtml(trail)}
     <p class="eyebrow">${esc(cat.kind)}</p>
     <h1 class="display display--md">${splitWords(it.name)}</h1>
   </div>
 </section>
-<section class="section section--paper detail">
+<section class="section section--white detail">
   <div class="container detail__grid">
-    <figure class="detail__fig plate reveal-mask">${pic(it.img, { sizes: '(min-width: 960px) 54vw, 92vw', maxW: 1600, eager: true })}<figcaption class="mono">${esc(it.name)}</figcaption></figure>
+    <figure class="detail__fig"><div class="plate tilt">${pic(it.img, { sizes: '(min-width: 960px) 54vw, 92vw', maxW: 1600, eager: true })}</div><figcaption class="mono">${esc(it.name)}</figcaption></figure>
     <div class="detail__body">
+      ${hl.length ? `<dl class="hl">${hl.map(h => `<div><dt>${esc(h.label)}</dt><dd>${esc(h.value)}</dd></div>`).join('')}</dl>` : ''}
       <h2 class="h3">Specification</h2>
       ${specTable(it, `Specification: ${it.name}`)}
       <p class="detail__sum">${esc(sentence)}</p>
@@ -209,7 +214,7 @@ export function detailPage(catKey, it, idx) {
     </div>
   </div>
 </section>
-<section class="section section--ink2 related" aria-labelledby="rel-h">
+<section class="section section--black related" aria-labelledby="rel-h">
   <div class="container">
     <div class="related__head"><h2 id="rel-h" class="h3">More ${esc(cat.short.toLowerCase())}</h2>
       <nav class="pn" aria-label="Previous and next"><a href="${cat.base}${prev.slug}/" rel="prev"><span class="mono">Previous</span> ${esc(prev.name)}</a><a href="${cat.base}${next.slug}/" rel="next"><span class="mono">Next</span> ${esc(next.name)}</a></nav></div>
@@ -233,7 +238,7 @@ export function contactPage() {
   const trail = [{ name: 'Home', href: '/' }, { name: 'Contact', href: '/contact/' }];
   const a = SITE.address;
   const body = `${head(trail, 'Contact and project enquiries', 'Discuss your mould or component requirement.', 'Send the details of what you want made. The more of the information below you can share, the more useful the first reply can be.')}
-<section class="section section--paper contact" id="enquiry">
+<section class="section section--white contact" id="enquiry">
   <div class="container contact__grid">
     <form class="form" id="enquiry-form" method="post" action="/api/contact" novalidate data-enquiry-form aria-labelledby="form-h">
       <h2 id="form-h" class="h3">Project enquiry</h2>
@@ -280,12 +285,12 @@ export function contactPage() {
 }
 
 export function thanksPage() {
-  const body = `<section class="page-hero page-hero--dark"><div class="container"><p class="eyebrow">Enquiry sent</p><h1 class="display display--md">Thank you. We have your enquiry.</h1><p class="lede">The team will reply to the email address you provided. If your matter is urgent, call ${SITE.phones.map(p => `<a href="tel:${p.tel}">${p.display}</a>`).join(' or ')}.</p><p><a class="btn btn--primary" href="/">Back to the home page</a></p></div></section>`;
+  const body = `<section class="page-hero page-hero--dark"><div class="page-hero__fx" aria-hidden="true"><i></i>${markUse('ph-mark')}</div><div class="container"><p class="eyebrow">Enquiry sent</p><h1 class="display display--md">Thank you. We have your enquiry.</h1><p class="lede">The team will reply to the email address you provided. If your matter is urgent, call ${SITE.phones.map(p => `<a href="tel:${p.tel}">${p.display}</a>`).join(' or ')}.</p><p><a class="btn btn--primary" href="/">Back to the home page</a></p></div></section>`;
   return layout({ path: '/contact/thank-you/', title: 'Enquiry Sent | Mastercraft Engineers', description: 'Your enquiry to Mastercraft Engineers has been sent.', body, noindex: true, ld: [orgLd()], pageClass: 'page-inner' });
 }
 
 export function notFoundPage() {
-  const body = `<section class="page-hero page-hero--dark"><div class="container"><p class="eyebrow">Error 404</p><h1 class="display display--md">This page could not be found.</h1><p class="lede">The address may have changed. These pages are the best places to continue.</p>
+  const body = `<section class="page-hero page-hero--dark"><div class="page-hero__fx" aria-hidden="true"><i></i>${markUse('ph-mark')}</div><div class="container"><p class="eyebrow">Error 404</p><h1 class="display display--md">This page could not be found.</h1><p class="lede">The address may have changed. These pages are the best places to continue.</p>
   <ul class="jump"><li><a href="/">Home</a></li><li><a href="/injection-moulds/">Small precision injection moulds</a></li><li><a href="/large-size-injection-moulds/">Large injection moulds</a></li><li><a href="/components/">Components</a></li><li><a href="/facilities/">Facilities</a></li><li><a href="/contact/">Contact</a></li></ul></div></section>`;
   return layout({ path: '/404.html', title: 'Page Not Found | Mastercraft Engineers', description: 'The page you requested could not be found.', body, noindex: true, ld: [orgLd()], pageClass: 'page-inner' });
 }
