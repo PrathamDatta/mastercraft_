@@ -1,0 +1,603 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "trailingSlash": true,
+  "cleanUrls": false,
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.mastercraftengineers.com"
+        }
+      ],
+      "destination": "https://mastercraftengineers.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/mastercraft_logo.png",
+      "destination": "/assets/img/mastercraft-logo.png",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/mc_campus.jpg",
+      "destination": "/assets/img/mastercraft-engineers-facility-bengaluru-aerial-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/mc_campus-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/mastercraft-engineers-facility-bengaluru-aerial-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/machining5.jpg",
+      "destination": "/assets/img/milling-head-cutting-clamped-workpiece-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/machining5-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/milling-head-cutting-clamped-workpiece-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/machining2.jpg",
+      "destination": "/assets/img/machining-centre-spindle-and-rotary-fixture-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/machining2-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/machining-centre-spindle-and-rotary-fixture-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/machining3.jpg",
+      "destination": "/assets/img/cnc-machine-carriage-and-control-panel-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/machining3-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/cnc-machine-carriage-and-control-panel-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/machining4.jpg",
+      "destination": "/assets/img/mould-plate-clamped-in-machine-bed-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/machining4-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/mould-plate-clamped-in-machine-bed-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/machining6.jpg",
+      "destination": "/assets/img/cutting-tool-in-optical-tool-measurement-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/machining6-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/cutting-tool-in-optical-tool-measurement-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/quality_img.jpg",
+      "destination": "/assets/img/cmm-touch-probe-measuring-insert-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/quality_img-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/cmm-touch-probe-measuring-insert-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/quality_img1.jpg",
+      "destination": "/assets/img/melt-flow-index-testing-machine-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/quality_img1-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/melt-flow-index-testing-machine-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/crane_img.jpg",
+      "destination": "/assets/img/mould-assembly-bay-with-eot-crane-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/crane_img-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/mould-assembly-bay-with-eot-crane-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/testing_img.jpg",
+      "destination": "/assets/img/injection-moulding-machines-production-hall-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/testing_img-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/injection-moulding-machines-production-hall-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/project_management.jpg",
+      "destination": "/assets/img/project-review-meeting-mould-design-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/project_management-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/project-review-meeting-mould-design-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/cad_cam1.jpg",
+      "destination": "/assets/img/cad-cam-design-office-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/cad_cam1-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/cad-cam-design-office-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/cam_img.jpg",
+      "destination": "/assets/img/cam-toolpath-simulation-mould-insert-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/cam_img-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/cam-toolpath-simulation-mould-insert-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/injection_moulding1.jpg",
+      "destination": "/assets/img/two-cavity-lid-battery-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/injection_moulding1-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/two-cavity-lid-battery-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/injection_moulding2.jpg",
+      "destination": "/assets/img/base-plate-injection-mould-4-drop-hot-runner-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/injection_moulding2-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/base-plate-injection-mould-4-drop-hot-runner-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/plastic_components1.jpg",
+      "destination": "/assets/img/plastic-injection-moulded-components-group-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/plastic_components1-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/plastic-injection-moulded-components-group-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/led_cover.jpg",
+      "destination": "/assets/img/led-cover-two-cavity-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/led_cover-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/led-cover-two-cavity-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/blende_saule.jpg",
+      "destination": "/assets/img/blende-saule-a-oben-mould-671.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/blende_saule-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/blende-saule-a-oben-mould-671.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/Rahmen_saule.jpg",
+      "destination": "/assets/img/rahmen-a-saule-mould-650.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/Rahmen_saule-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/rahmen-a-saule-mould-650.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/telephone_socket.jpg",
+      "destination": "/assets/img/telephone-socket-64-cavity-mould-561.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/telephone_socket-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/telephone-socket-64-cavity-mould-561.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/eye_drop_nozzle.jpg",
+      "destination": "/assets/img/eye-drop-nozzle-32-cavity-mould-478.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/eye_drop_nozzle-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/eye-drop-nozzle-32-cavity-mould-478.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/FR_Base_Grill2.jpg",
+      "destination": "/assets/img/fr-base-grill-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/FR_Base_Grill2-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/fr-base-grill-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/FR_Door_Trim.jpg",
+      "destination": "/assets/img/fr-door-trim-lower-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/FR_Door_Trim-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/fr-door-trim-lower-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/B_Pillar.jpg",
+      "destination": "/assets/img/b-pillar-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/B_Pillar-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/b-pillar-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/A_Pillar.jpg",
+      "destination": "/assets/img/a-pillar-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/A_Pillar-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/a-pillar-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/Cowl_Mould.jpg",
+      "destination": "/assets/img/cowl-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/Cowl_Mould-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/cowl-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/DR_Panel.jpg",
+      "destination": "/assets/img/dr-panel-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/DR_Panel-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/dr-panel-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/CTR_Console.jpg",
+      "destination": "/assets/img/ctr-panel-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/CTR_Console-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/ctr-panel-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/DR_Cover.jpg",
+      "destination": "/assets/img/dr-cover-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/DR_Cover-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/dr-cover-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/Panel_CTR.jpg",
+      "destination": "/assets/img/panel-ctr-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/Panel_CTR-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/panel-ctr-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/Licence_Garnish.jpg",
+      "destination": "/assets/img/licence-garnish-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/Licence_Garnish-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/licence-garnish-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/Side_Sill.jpg",
+      "destination": "/assets/img/side-sill-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/Side_Sill-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/side-sill-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/Wheel_Arch.jpg",
+      "destination": "/assets/img/wheel-arch-lh-rh-injection-mould-parts-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/Wheel_Arch-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/wheel-arch-lh-rh-injection-mould-parts-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/Wheel_Cap.jpg",
+      "destination": "/assets/img/wheel-cap-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/Wheel_Cap-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/wheel-cap-large-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/ornament_subassy.jpg",
+      "destination": "/assets/img/ornament-sub-assembly-front-door-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/ornament_subassy-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/ornament-sub-assembly-front-door-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/ornament_subassy_rr.jpg",
+      "destination": "/assets/img/ornament-sub-assembly-rear-door-trim-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/ornament_subassy_rr-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/ornament-sub-assembly-rear-door-trim-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/cover_drive_hyundai.jpg",
+      "destination": "/assets/img/cover-drive-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/cover_drive_hyundai-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/cover-drive-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/Housing_Drive_Hyundai.jpg",
+      "destination": "/assets/img/housing-drive-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/Housing_Drive_Hyundai-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/housing-drive-injection-mould-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/cp1.jpg",
+      "destination": "/assets/img/door-lock-actuator-levers-pom-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/cp1-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/door-lock-actuator-levers-pom-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/cp2.jpg",
+      "destination": "/assets/img/clip-frame-and-plunger-polycarbonate-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/cp2-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/clip-frame-and-plunger-polycarbonate-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/cp3.jpg",
+      "destination": "/assets/img/arm-rest-cover-and-movable-cap-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/cp3-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/arm-rest-cover-and-movable-cap-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/protector_mnl_seat.jpg",
+      "destination": "/assets/img/seat-track-protector-and-power-seat-bush-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/protector_mnl_seat-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/seat-track-protector-and-power-seat-bush-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/snap_door_lock.jpg",
+      "destination": "/assets/img/door-lock-control-link-and-seat-track-protector-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/snap_door_lock-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/door-lock-control-link-and-seat-track-protector-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/lever_door_lock.jpg",
+      "destination": "/assets/img/door-lock-actuator-lever-and-hood-lock-bush-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/lever_door_lock-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/door-lock-actuator-lever-and-hood-lock-bush-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/centre_tube.jpg",
+      "destination": "/assets/img/centre-tube-with-top-and-bottom-caps-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/centre_tube-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/centre-tube-with-top-and-bottom-caps-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/airvent_screw.jpg",
+      "destination": "/assets/img/airvent-screw-polyamide-6-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/airvent_screw-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/airvent-screw-polyamide-6-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/led_cover2.jpg",
+      "destination": "/assets/img/lower-housings-glass-filled-polyamide-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/led_cover2-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/lower-housings-glass-filled-polyamide-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/Over_Moulded_Cover.jpg",
+      "destination": "/assets/img/over-moulded-cover-ppgf40-tpe-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/Over_Moulded_Cover-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/over-moulded-cover-ppgf40-tpe-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/hvac_flap2.jpg",
+      "destination": "/assets/img/hvac-flap-two-component-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/hvac_flap2-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/hvac-flap-two-component-800.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/Knob_Upper.jpg",
+      "destination": "/assets/img/knob-upper-pc-asa-500.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/Knob_Upper-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/knob-upper-pc-asa-500.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/dail.jpg",
+      "destination": "/assets/img/dial-r-l-pc-abs-tpe-500.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wp/wp-content/uploads/:y/:m/dail-:w(\\d+)x:h(\\d+).jpg",
+      "destination": "/assets/img/dial-r-l-pc-abs-tpe-500.jpg",
+      "permanent": true
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000"
+        }
+      ]
+    },
+    {
+      "source": "/assets/img/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/assets/fonts/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(css|js)/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    }
+  ]
+}

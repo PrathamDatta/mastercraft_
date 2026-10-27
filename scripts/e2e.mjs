@@ -3,15 +3,17 @@ import { chromium } from '/opt/node-tools/node_modules/playwright/index.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
+import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BASE = process.env.BASE || 'http://127.0.0.1:8099';
 const axeSrc = fs.readFileSync(path.join(root, 'node_modules/axe-core/axe.min.js'), 'utf8');
 let server;
 if (!process.env.BASE) {
-  server = spawn('php', ['-S', '127.0.0.1:8099', '-t', 'dist', 'scripts/router.php'], { cwd: root, env: { ...process.env, MC_MAIL_DRY_RUN: '1' }, stdio: 'ignore' });
+  server = spawn('node', ['scripts/dev-server.mjs'], { cwd: root, env: { ...process.env, PORT: '8099', MC_MAIL_DRY_RUN: '1' }, stdio: 'ignore' });
   await new Promise(r => setTimeout(r, 1200));
 }
+const MAILLOG = path.join(os.tmpdir(), 'mastercraft-mail.log');
 const results = []; const bad = [];
 const ok = (name, cond, extra = '') => { results.push([cond, name]); if (!cond) bad.push(`${name} ${extra}`); };
 const sitemap = fs.readFileSync(path.join(root, 'dist/sitemap.xml'), 'utf8');
@@ -107,22 +109,23 @@ for (const w of [1440, 390]) {
   await p.fill('#f-name', 'Test Buyer'); await p.fill('#f-email', 'bad'); await p.fill('#f-company', 'Test Co'); await p.fill('#f-msg', 'Need a 4 cavity mould in PP, 50 g part.');
   await submit(); ok('bad email rejected', (await p.locator('#e-email').textContent()).includes('valid email'));
   await p.fill('#f-email', 'buyer@example.com'); await p.waitForTimeout(2700);
-  fs.rmSync('/tmp/mastercraft-mail.log', { force: true });
+  fs.rmSync(MAILLOG, { force: true });
   await submit(); await p.waitForSelector('.form__status.is-ok', { timeout: 5000 }).catch(() => {});
   ok('valid submit shows success', await p.locator('.form__status.is-ok').count() === 1);
-  const log = fs.existsSync('/tmp/mastercraft-mail.log') ? fs.readFileSync('/tmp/mastercraft-mail.log', 'utf8') : '';
+  const log = fs.existsSync(MAILLOG) ? fs.readFileSync(MAILLOG, 'utf8') : '';
   ok('server received and formatted the enquiry', /Test Buyer/.test(log) && /buyer@example\.com/.test(log) && /Reply-To: Test Buyer <buyer@example\.com>/.test(log));
   // server-side validation + header injection + honeypot via direct POST
-  const post = (body) => fetch(BASE + '/contact.php', { method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(body) });
+  const post = (body) => fetch(BASE + '/api/contact', { method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/x-www-form-urlencoded', 'Origin': BASE }, body: new URLSearchParams(body) });
   let r = await post({ name: '', email: 'x', company: '', message: 'hi' }); ok('server rejects invalid input (422)', r.status === 422);
-  fs.rmSync('/tmp/mastercraft-mail.log', { force: true });
+  fs.rmSync(MAILLOG, { force: true });
   r = await post({ name: 'Evil\r\nBcc: spam@x.com', email: 'a@b.co', company: 'C', message: 'A long enough message here.' });
-  const log2 = fs.existsSync('/tmp/mastercraft-mail.log') ? fs.readFileSync('/tmp/mastercraft-mail.log', 'utf8') : '';
+  const log2 = fs.existsSync(MAILLOG) ? fs.readFileSync(MAILLOG, 'utf8') : '';
   ok('header injection neutralised', r.status === 200 && !/^Bcc:/m.test(log2));
-  fs.rmSync('/tmp/mastercraft-mail.log', { force: true });
+  fs.rmSync(MAILLOG, { force: true });
   r = await post({ name: 'Bot', email: 'a@b.co', company: 'C', message: 'A long enough message here.', website: 'http://spam' });
-  ok('honeypot swallows bot posts without sending', r.status === 200 && !fs.existsSync('/tmp/mastercraft-mail.log'));
-  r = await fetch(BASE + '/contact.php'); ok('GET contact.php rejected (405)', r.status === 405);
+  ok('honeypot swallows bot posts without sending', r.status === 200 && !fs.existsSync(MAILLOG));
+  r = await fetch(BASE + '/api/contact', { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/x-www-form-urlencoded', Origin: 'https://evil.example' }, body: 'name=a&email=a@b.co&company=c&message=long enough message' }); ok('cross-origin POST rejected (403)', r.status === 403);
+  r = await fetch(BASE + '/api/contact'); ok('GET /api/contact rejected (405)', r.status === 405);
   await ctx.close();
 }
 { // reduced motion: everything visible, no hidden-until-reveal state
@@ -138,11 +141,11 @@ for (const w of [1440, 390]) {
   ok('no-JS: process steps visible', await p.locator('#stage-machining .h3').isVisible() && await p.locator('#stage-machining img').isVisible());
   ok('no-JS: nav links visible', await p.locator('.nav-list a', { hasText: 'Contact' }).isVisible());
   await p.goto(BASE + '/injection-moulds/'); ok('no-JS: anatomy list readable, no dead hotspots', await p.locator('#a1').isVisible() && await p.locator('.hotspot').first().isHidden());
-  await p.goto(BASE + '/contact/'); ok('no-JS: form posts natively', (await p.locator('form').getAttribute('action')) === '/contact.php');
+  await p.goto(BASE + '/contact/'); ok('no-JS: form posts natively', (await p.locator('form').getAttribute('action')) === '/api/contact');
   await ctx.close();
 }
 { // 404 + redirect-ish behaviours
-  const r = await fetch(BASE + '/injection-moulds', { redirect: 'manual' }); ok('missing trailing slash redirects to canonical', r.status === 301);
+  const r = await fetch(BASE + '/injection-moulds', { redirect: 'manual' }); ok('missing trailing slash redirects to canonical', [301, 308].includes(r.status));
 }
 await browser.close(); server?.kill();
 const passN = results.filter(r => r[0]).length;

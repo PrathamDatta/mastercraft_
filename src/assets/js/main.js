@@ -222,7 +222,7 @@
       e.preventDefault();
       submit.disabled = true; var label = submit.firstChild.textContent; submit.firstChild.textContent = 'Sending… ';
       status.className = 'form__status'; status.textContent = 'Sending your enquiry…';
-      fetch(form.action, { method: 'POST', body: new FormData(form), headers: { 'Accept': 'application/json' } })
+      fetch(form.action, { method: 'POST', body: new URLSearchParams(new FormData(form)), headers: { 'Accept': 'application/json' } })
         .then(function (r) { return r.json().then(function (j) { return { ok: r.ok && j.ok, j: j }; }); })
         .then(function (res) {
           if (res.ok) {

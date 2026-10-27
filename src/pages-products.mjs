@@ -235,7 +235,7 @@ export function contactPage() {
   const body = `${head(trail, 'Contact and project enquiries', 'Discuss your mould or component requirement.', 'Send the details of what you want made. The more of the information below you can share, the more useful the first reply can be.')}
 <section class="section section--paper contact" id="enquiry">
   <div class="container contact__grid">
-    <form class="form" id="enquiry-form" method="post" action="/contact.php" novalidate data-enquiry-form aria-labelledby="form-h">
+    <form class="form" id="enquiry-form" method="post" action="/api/contact" novalidate data-enquiry-form aria-labelledby="form-h">
       <h2 id="form-h" class="h3">Project enquiry</h2>
       <p class="note" id="form-note">Fields marked <span aria-hidden="true">*</span><span class="sr-only">with an asterisk</span> are required.</p>
       <div class="form__status" role="status" aria-live="polite" data-status></div>
