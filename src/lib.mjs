@@ -5,6 +5,8 @@ import { IMAGES } from './images.config.mjs';
 
 import crypto from 'node:crypto';
 const root = path.resolve(import.meta.dirname, '..');
+// Cache-busting token = hash of the CSS/JS source, so any change gets a new URL (a date would not change within a day).
+const ASSET_V = crypto.createHash('sha256').update(fs.readFileSync(path.join(root, 'src/assets/css/main.css'))).update(fs.readFileSync(path.join(root, 'src/assets/js/main.js'))).digest('hex').slice(0, 10);
 const INLINE_JS = "document.documentElement.classList.add('js')";
 const INLINE_HASH = crypto.createHash('sha256').update(INLINE_JS).digest('base64');
 const CSP = `default-src 'self'; script-src 'self' 'sha256-${INLINE_HASH}'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; frame-src https://www.youtube-nocookie.com; connect-src 'self'; form-action 'self'; base-uri 'self'; object-src 'none'`;
@@ -137,8 +139,8 @@ export function layout({ path: pagePath, title, description, body, ld = [], noin
 <link rel="preload" href="/assets/fonts/instrument-serif-italic.woff2" as="font" type="font/woff2" crossorigin>
 ${preload.join('\n')}
 <script>${INLINE_JS}</script>
-<link rel="stylesheet" href="/assets/css/main.css?v=${SITE.buildDate}">
-<script src="/assets/js/main.js?v=${SITE.buildDate}" defer></script>
+<link rel="stylesheet" href="/assets/css/main.css?v=${ASSET_V}">
+<script src="/assets/js/main.js?v=${ASSET_V}" defer></script>
 <script type="application/ld+json">${JSON.stringify(graph)}</script>
 </head>
 <body class="${pageClass}">
