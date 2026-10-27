@@ -1,0 +1,23 @@
+{
+  "name": "mastercraft-engineers-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static site generator and assets for mastercraftengineers.com",
+  "type": "module",
+  "scripts": {
+    "images": "node src/images.mjs",
+    "build": "node src/images.mjs && node src/build.mjs",
+    "build:pages": "node src/build.mjs",
+    "serve": "MC_MAIL_DRY_RUN=1 php -S 127.0.0.1:8080 -t dist scripts/router.php",
+    "check": "node scripts/check.mjs",
+    "e2e": "node scripts/e2e.mjs",
+    "test": "npm run build && npm run check && npm run e2e"
+  },
+  "dependencies": {
+    "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "axe-core": "^4.14.0",
+    "esbuild": "^0.28.2"
+  }
+}

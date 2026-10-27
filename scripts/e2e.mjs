@@ -1,0 +1,150 @@
+// Browser tests (Playwright): console errors, overflow, accessibility (axe), keyboard, form, reduced motion, no-JS.
+import { chromium } from '/opt/node-tools/node_modules/playwright/index.mjs';
+import fs from 'node:fs';
+import path from 'node:path';
+import { spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const BASE = process.env.BASE || 'http://127.0.0.1:8099';
+const axeSrc = fs.readFileSync(path.join(root, 'node_modules/axe-core/axe.min.js'), 'utf8');
+let server;
+if (!process.env.BASE) {
+  server = spawn('php', ['-S', '127.0.0.1:8099', '-t', 'dist', 'scripts/router.php'], { cwd: root, env: { ...process.env, MC_MAIL_DRY_RUN: '1' }, stdio: 'ignore' });
+  await new Promise(r => setTimeout(r, 1200));
+}
+const results = []; const bad = [];
+const ok = (name, cond, extra = '') => { results.push([cond, name]); if (!cond) bad.push(`${name} ${extra}`); };
+const sitemap = fs.readFileSync(path.join(root, 'dist/sitemap.xml'), 'utf8');
+const pages = [...sitemap.matchAll(/<loc>(https:\/\/mastercraftengineers\.com[^<]*)<\/loc>/g)].map(m => m[1].replace('https://mastercraftengineers.com', '')).filter(u => !/\.(jpg|png)$/.test(u));
+pages.push('/contact/thank-you/', '/does-not-exist/');
+const browser = await chromium.launch();
+// tests drive the page programmatically, so neutralise smooth scrolling (a real-user nicety) to avoid stale click coordinates
+const _nc = browser.newContext.bind(browser);
+browser.newContext = async (o) => { const c = await _nc(o); await c.addInitScript(() => document.addEventListener('DOMContentLoaded', () => { document.documentElement.style.scrollBehavior = 'auto'; })); return c; };
+const sample = ['/', '/about/', '/facilities/', '/quality/', '/injection-moulds/', '/large-size-injection-moulds/', '/components/', '/2k-parts/', '/contact/', '/large-size-injection-moulds/side-sill-mould/', '/components/centre-tube-with-caps/'];
+
+// 1) every page: loads, no console errors, no horizontal overflow at 3 widths
+for (const w of [375, 820, 1440]) {
+  const ctx = await browser.newContext({ viewport: { width: w, height: 900 } });
+  for (const u of pages) {
+    const p = await ctx.newPage(); const errs = [];
+    p.on('console', m => { if (m.type() === 'error' || m.type() === 'warning') errs.push(m.text()); }); p.on('pageerror', e => errs.push(e.message));
+    const r = await p.goto(BASE + u, { waitUntil: 'load' });
+    const expect404 = u === '/does-not-exist/';
+    // a 404 document legitimately logs one failed resource
+    const realErrs = expect404 ? errs.filter(e => !/404/.test(e)) : errs;
+    ok(`[${w}] ${u} status`, expect404 ? r.status() === 404 : r.status() === 200, r.status());
+    ok(`[${w}] ${u} no console errors`, realErrs.length === 0, realErrs.join(' | '));
+    const over = await p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    ok(`[${w}] ${u} no horizontal overflow`, over <= 0, `overflow ${over}px`);
+    const broken = await p.evaluate(async () => { await Promise.all([...document.images].filter(i => i.loading === 'lazy').map(i => { i.loading = 'eager'; return i.decode().catch(() => {}); })); return [...document.images].filter(i => !i.naturalWidth).map(i => i.src); });
+    ok(`[${w}] ${u} no broken images`, broken.length === 0, broken.join(','));
+    await p.close();
+  }
+  await ctx.close();
+}
+
+// 2) accessibility (axe, WCAG 2.0/2.1/2.2 A+AA) on representative pages, desktop and mobile
+for (const w of [1440, 390]) {
+  const ctx = await browser.newContext({ viewport: { width: w, height: 900 }, bypassCSP: true });
+  for (const u of sample) {
+    const p = await ctx.newPage(); await p.goto(BASE + u); await p.waitForTimeout(300);
+    await p.evaluate(async () => { for (let y = 0; y < document.body.scrollHeight; y += 700) { window.scrollTo(0, y); await new Promise(r => setTimeout(r, 60)); } window.scrollTo(0, 0); });
+    await p.waitForTimeout(1800); // let entrance animations finish so colour contrast is measured on final state
+    await p.addScriptTag({ content: axeSrc });
+    const res = await p.evaluate(() => axe.run(document, { runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] }));
+    const v = res.violations.map(x => `${x.id}(${x.nodes.length}): ${x.nodes.slice(0, 2).map(n => n.target.join(' ')).join(' ; ')}`);
+    ok(`[axe ${w}] ${u}`, v.length === 0, '\n      ' + v.join('\n      '));
+    await p.close();
+  }
+  await ctx.close();
+}
+
+// 3) behaviours
+{
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 800 } }); const p = await ctx.newPage(); await p.goto(BASE + '/');
+  const t = p.locator('.menu-toggle'); await t.click();
+  ok('mobile menu opens', (await t.getAttribute('aria-expanded')) === 'true' && await p.locator('#primary-nav').isVisible());
+  ok('mobile menu focuses first link', await p.evaluate(() => document.activeElement.closest('#primary-nav') !== null));
+  await p.keyboard.press('Escape'); ok('Escape closes mobile menu and returns focus', (await t.getAttribute('aria-expanded')) === 'false' && await p.evaluate(() => document.activeElement.classList.contains('menu-toggle')));
+  await t.click(); await p.locator('#primary-nav a', { hasText: 'Quality' }).first().click(); await p.waitForURL('**/quality/');
+  ok('mobile nav navigates', p.url().endsWith('/quality/'));
+  ok('quality marked current', await p.locator('#primary-nav a[aria-current="page"]').count() >= 1);
+  await ctx.close();
+}
+{
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } }); const p = await ctx.newPage(); await p.goto(BASE + '/');
+  await p.locator('.sub-toggle').focus(); await p.keyboard.press('Enter');
+  ok('desktop dropdown opens with keyboard', (await p.locator('.sub-toggle').getAttribute('aria-expanded')) === 'true' && await p.locator('.sub a').first().isVisible());
+  await p.keyboard.press('Escape'); ok('dropdown closes with Escape', (await p.locator('.sub-toggle').getAttribute('aria-expanded')) === 'false');
+  // process highlighting follows scroll
+  await p.locator('#stage-assembly').scrollIntoViewIfNeeded(); await p.evaluate(() => document.querySelector('#stage-assembly').scrollIntoView({ block: 'center' })); await p.waitForTimeout(700);
+  ok('process highlights the stage in view', await p.locator('#stage-assembly.is-active').count() === 1 && await p.locator('[data-node="4"].is-on').count() === 1);
+  ok('process rail is sticky while in section', await p.evaluate(() => { const r = document.querySelector('.process__rail').getBoundingClientRect(); return r.top > 0 && r.top < 200; }));
+  await p.evaluate(() => document.querySelector('#quality').scrollIntoView()); await p.waitForTimeout(300);
+  ok('sticky rail releases after the section (page not trapped)', await p.evaluate(() => document.querySelector('.process__rail').getBoundingClientRect().bottom <= 0));
+  await ctx.close();
+}
+{
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } }); const p = await ctx.newPage(); await p.goto(BASE + '/injection-moulds/');
+  const hs = p.locator('[data-spot="a3"]'); await hs.scrollIntoViewIfNeeded(); await hs.click();
+  ok('hotspot toggles pressed + list item', (await hs.getAttribute('aria-pressed')) === 'true' && await p.locator('#a3.is-on').count() === 1);
+  await p.keyboard.press('Escape'); ok('hotspot Escape clears', (await hs.getAttribute('aria-pressed')) === 'false');
+  await ctx.close();
+}
+{ // video facade
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } }); const p = await ctx.newPage(); await p.goto(BASE + '/about/');
+  ok('video not loaded until requested', await p.locator('iframe').count() === 0);
+  await ctx.close();
+}
+{ // form
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } }); const p = await ctx.newPage(); await p.goto(BASE + '/contact/?ref=Side%20sill%20mould');
+  const submit = async () => { await p.locator('[data-submit]').scrollIntoViewIfNeeded(); await p.waitForTimeout(700); await p.locator('[data-submit]').click(); };
+  ok('form prefilled from ?ref=', (await p.inputValue('#f-msg')).includes('Side sill mould'));
+  await p.fill('#f-msg', ''); await submit();
+  ok('empty submit shows errors', await p.locator('.err:not([hidden])').count() >= 3 && await p.evaluate(() => document.activeElement.id) === 'f-name');
+  ok('invalid fields flagged aria-invalid', await p.locator('[aria-invalid="true"]').count() >= 3);
+  await p.fill('#f-name', 'Test Buyer'); await p.fill('#f-email', 'bad'); await p.fill('#f-company', 'Test Co'); await p.fill('#f-msg', 'Need a 4 cavity mould in PP, 50 g part.');
+  await submit(); ok('bad email rejected', (await p.locator('#e-email').textContent()).includes('valid email'));
+  await p.fill('#f-email', 'buyer@example.com'); await p.waitForTimeout(2700);
+  fs.rmSync('/tmp/mastercraft-mail.log', { force: true });
+  await submit(); await p.waitForSelector('.form__status.is-ok', { timeout: 5000 }).catch(() => {});
+  ok('valid submit shows success', await p.locator('.form__status.is-ok').count() === 1);
+  const log = fs.existsSync('/tmp/mastercraft-mail.log') ? fs.readFileSync('/tmp/mastercraft-mail.log', 'utf8') : '';
+  ok('server received and formatted the enquiry', /Test Buyer/.test(log) && /buyer@example\.com/.test(log) && /Reply-To: Test Buyer <buyer@example\.com>/.test(log));
+  // server-side validation + header injection + honeypot via direct POST
+  const post = (body) => fetch(BASE + '/contact.php', { method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(body) });
+  let r = await post({ name: '', email: 'x', company: '', message: 'hi' }); ok('server rejects invalid input (422)', r.status === 422);
+  fs.rmSync('/tmp/mastercraft-mail.log', { force: true });
+  r = await post({ name: 'Evil\r\nBcc: spam@x.com', email: 'a@b.co', company: 'C', message: 'A long enough message here.' });
+  const log2 = fs.existsSync('/tmp/mastercraft-mail.log') ? fs.readFileSync('/tmp/mastercraft-mail.log', 'utf8') : '';
+  ok('header injection neutralised', r.status === 200 && !/^Bcc:/m.test(log2));
+  fs.rmSync('/tmp/mastercraft-mail.log', { force: true });
+  r = await post({ name: 'Bot', email: 'a@b.co', company: 'C', message: 'A long enough message here.', website: 'http://spam' });
+  ok('honeypot swallows bot posts without sending', r.status === 200 && !fs.existsSync('/tmp/mastercraft-mail.log'));
+  r = await fetch(BASE + '/contact.php'); ok('GET contact.php rejected (405)', r.status === 405);
+  await ctx.close();
+}
+{ // reduced motion: everything visible, no hidden-until-reveal state
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' }); const p = await ctx.newPage(); await p.goto(BASE + '/');
+  const st = await p.evaluate(() => { const w = document.querySelector('.w > span'); const c = document.querySelector('.hero__curtain'); const rv = [...document.querySelectorAll('.reveal')].map(e => getComputedStyle(e).opacity); return { tr: getComputedStyle(w).transform, curtain: getComputedStyle(c).display, minOp: Math.min(...rv) }; });
+  ok('reduced motion: headline static', st.tr === 'none' || st.tr === 'matrix(1, 0, 0, 1, 0, 0)', st.tr);
+  ok('reduced motion: curtain removed, reveals visible', st.curtain === 'none' && st.minOp === 1, JSON.stringify(st));
+  await ctx.close();
+}
+{ // no JavaScript: content, nav and specs still available
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, javaScriptEnabled: false }); const p = await ctx.newPage(); await p.goto(BASE + '/');
+  ok('no-JS: hero headline visible', await p.locator('h1').isVisible());
+  ok('no-JS: process steps visible', await p.locator('#stage-machining .h3').isVisible() && await p.locator('#stage-machining img').isVisible());
+  ok('no-JS: nav links visible', await p.locator('.nav-list a', { hasText: 'Contact' }).isVisible());
+  await p.goto(BASE + '/injection-moulds/'); ok('no-JS: anatomy list readable, no dead hotspots', await p.locator('#a1').isVisible() && await p.locator('.hotspot').first().isHidden());
+  await p.goto(BASE + '/contact/'); ok('no-JS: form posts natively', (await p.locator('form').getAttribute('action')) === '/contact.php');
+  await ctx.close();
+}
+{ // 404 + redirect-ish behaviours
+  const r = await fetch(BASE + '/injection-moulds', { redirect: 'manual' }); ok('missing trailing slash redirects to canonical', r.status === 301);
+}
+await browser.close(); server?.kill();
+const passN = results.filter(r => r[0]).length;
+console.log(`e2e: ${passN}/${results.length} passed`);
+if (bad.length) { console.log('FAILURES:\n  ' + bad.join('\n  ')); process.exit(1); }
