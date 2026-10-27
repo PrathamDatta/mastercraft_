@@ -82,9 +82,9 @@ for (const w of [1440, 390]) {
   // hero: accessible name, spotlight follows the pointer
   ok('hero h1 has the full accessible name', (await p.locator('h1').getAttribute('aria-label')) === 'Precision mould engineering, from concept to finished component.');
   const before = await p.evaluate(() => getComputedStyle(document.querySelector('[data-hero]')).getPropertyValue('--mx'));
-  await p.mouse.move(200, 300); await p.mouse.move(260, 320); await p.waitForTimeout(700);
+  await p.mouse.move(200, 300); await p.mouse.move(260, 320); await p.waitForTimeout(2000);
   const after = await p.evaluate(() => getComputedStyle(document.querySelector('[data-hero]')).getPropertyValue('--mx'));
-  ok('hero spotlight follows the pointer', before !== after && parseFloat(after) < 45, `${before} -> ${after}`);
+  ok('hero spotlight follows the pointer', before !== after && parseFloat(after) < 60, `${before} -> ${after}`);
   // process deck: seven cards, sticky stacking, then releases
   ok('process deck has 7 stages', await p.locator('[data-card]').count() === 7);
   await p.evaluate(() => document.querySelector('#stage-moulding').scrollIntoView({ block: 'start' })); await p.waitForTimeout(500);

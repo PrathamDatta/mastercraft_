@@ -211,7 +211,7 @@ export function aboutPage() {
     </aside>
   </div>
 </section>
-<section class="section section--dark" id="video" aria-labelledby="video-h">
+<section class="section section--black" id="video" aria-labelledby="video-h">
   <div class="container video__grid">
     <div>
       <p class="eyebrow">Corporate video</p>
@@ -274,7 +274,7 @@ export function facilitiesPage() {
   </div>
 </section>
 
-<section class="section section--dark fac fac--machining" id="machining" aria-labelledby="machining-h">
+<section class="section section--black fac fac--machining" id="machining" aria-labelledby="machining-h">
   <div class="container">
     <div class="fac__head">
       <p class="eyebrow"><span class="idx">02</span> Machining, CNC and EDM</p>
@@ -394,7 +394,7 @@ export function qualityPage() {
   </div>
 </section>
 
-<section class="section section--dark" aria-labelledby="qsum-h">
+<section class="section section--black" aria-labelledby="qsum-h">
   <div class="container">
     <h2 id="qsum-h" class="h2">Summary of documented methods</h2>
     <table class="spec spec--dark spec--wide"><caption>Quality methods documented by Mastercraft Engineers</caption>
