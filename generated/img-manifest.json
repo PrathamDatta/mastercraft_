@@ -1,0 +1,796 @@
+{
+ "campus": {
+  "widths": [
+   480,
+   800,
+   1200,
+   1600,
+   2200
+  ],
+  "w": 2200,
+  "h": 795,
+  "slug": "mastercraft-engineers-facility-bengaluru-aerial",
+  "ratio": {
+   "w": 2200,
+   "h": 795
+  },
+  "fallbackW": 800
+ },
+ "videoThumb": {
+  "widths": [
+   480,
+   800,
+   1200,
+   1280
+  ],
+  "w": 1280,
+  "h": 720,
+  "slug": "mastercraft-corporate-video-thumbnail",
+  "ratio": {
+   "w": 1280,
+   "h": 720
+  },
+  "fallbackW": 800
+ },
+ "machining5": {
+  "widths": [
+   480,
+   800,
+   1183
+  ],
+  "w": 1183,
+  "h": 783,
+  "slug": "milling-head-cutting-clamped-workpiece",
+  "ratio": {
+   "w": 1183,
+   "h": 783
+  },
+  "fallbackW": 800
+ },
+ "machining2": {
+  "widths": [
+   480,
+   800,
+   1183
+  ],
+  "w": 1183,
+  "h": 783,
+  "slug": "machining-centre-spindle-and-rotary-fixture",
+  "ratio": {
+   "w": 1183,
+   "h": 783
+  },
+  "fallbackW": 800
+ },
+ "machining3": {
+  "widths": [
+   480,
+   800,
+   1183
+  ],
+  "w": 1183,
+  "h": 783,
+  "slug": "cnc-machine-carriage-and-control-panel",
+  "ratio": {
+   "w": 1183,
+   "h": 783
+  },
+  "fallbackW": 800
+ },
+ "machining4": {
+  "widths": [
+   480,
+   800,
+   1183
+  ],
+  "w": 1183,
+  "h": 783,
+  "slug": "mould-plate-clamped-in-machine-bed",
+  "ratio": {
+   "w": 1183,
+   "h": 783
+  },
+  "fallbackW": 800
+ },
+ "machining6": {
+  "widths": [
+   480,
+   800,
+   1183
+  ],
+  "w": 1183,
+  "h": 783,
+  "slug": "cutting-tool-in-optical-tool-measurement",
+  "ratio": {
+   "w": 1183,
+   "h": 783
+  },
+  "fallbackW": 800
+ },
+ "qualityCmm": {
+  "widths": [
+   480,
+   800,
+   1200,
+   1211
+  ],
+  "w": 1211,
+  "h": 994,
+  "slug": "cmm-touch-probe-measuring-insert",
+  "ratio": {
+   "w": 1211,
+   "h": 994
+  },
+  "fallbackW": 800
+ },
+ "qualityMfi": {
+  "widths": [
+   480,
+   800,
+   1200,
+   1211
+  ],
+  "w": 1211,
+  "h": 994,
+  "slug": "melt-flow-index-testing-machine",
+  "ratio": {
+   "w": 1211,
+   "h": 994
+  },
+  "fallbackW": 800
+ },
+ "crane": {
+  "widths": [
+   480,
+   800,
+   1200,
+   1600,
+   2000
+  ],
+  "w": 2000,
+  "h": 1500,
+  "slug": "mould-assembly-bay-with-eot-crane",
+  "ratio": {
+   "w": 2000,
+   "h": 1500
+  },
+  "fallbackW": 800
+ },
+ "moulding": {
+  "widths": [
+   480,
+   800,
+   1200,
+   1500
+  ],
+  "w": 1500,
+  "h": 1000,
+  "slug": "injection-moulding-machines-production-hall",
+  "ratio": {
+   "w": 1500,
+   "h": 1000
+  },
+  "fallbackW": 800
+ },
+ "projectMgmt": {
+  "widths": [
+   480,
+   800,
+   1200,
+   1500
+  ],
+  "w": 1500,
+  "h": 678,
+  "slug": "project-review-meeting-mould-design",
+  "ratio": {
+   "w": 1500,
+   "h": 678
+  },
+  "fallbackW": 800
+ },
+ "cadOffice": {
+  "widths": [
+   480,
+   800,
+   1200,
+   1500
+  ],
+  "w": 1500,
+  "h": 672,
+  "slug": "cad-cam-design-office",
+  "ratio": {
+   "w": 1500,
+   "h": 672
+  },
+  "fallbackW": 800
+ },
+ "camToolpath": {
+  "widths": [
+   480,
+   800,
+   1115
+  ],
+  "w": 1115,
+  "h": 566,
+  "slug": "cam-toolpath-simulation-mould-insert",
+  "ratio": {
+   "w": 1115,
+   "h": 566
+  },
+  "fallbackW": 800
+ },
+ "mouldSmall1": {
+  "widths": [
+   480,
+   800,
+   1005
+  ],
+  "w": 1005,
+  "h": 701,
+  "slug": "two-cavity-lid-battery-injection-mould",
+  "ratio": {
+   "w": 1005,
+   "h": 701
+  },
+  "fallbackW": 800
+ },
+ "mouldSmall2": {
+  "widths": [
+   480,
+   800,
+   1200,
+   1500
+  ],
+  "w": 1500,
+  "h": 1133,
+  "slug": "base-plate-injection-mould-4-drop-hot-runner",
+  "ratio": {
+   "w": 1500,
+   "h": 1133
+  },
+  "fallbackW": 800
+ },
+ "componentsHero": {
+  "widths": [
+   480,
+   800,
+   1005
+  ],
+  "w": 1005,
+  "h": 701,
+  "slug": "plastic-injection-moulded-components-group",
+  "ratio": {
+   "w": 1005,
+   "h": 701
+  },
+  "fallbackW": 800
+ },
+ "ledCover": {
+  "widths": [
+   480,
+   800,
+   1200,
+   1440
+  ],
+  "w": 1440,
+  "h": 960,
+  "slug": "led-cover-two-cavity-mould",
+  "ratio": {
+   "w": 1440,
+   "h": 960
+  },
+  "fallbackW": 800
+ },
+ "blendeSaule": {
+  "widths": [
+   480,
+   671
+  ],
+  "w": 671,
+  "h": 623,
+  "slug": "blende-saule-a-oben-mould",
+  "ratio": {
+   "w": 671,
+   "h": 623
+  },
+  "fallbackW": 671
+ },
+ "rahmenSaule": {
+  "widths": [
+   480,
+   650
+  ],
+  "w": 650,
+  "h": 455,
+  "slug": "rahmen-a-saule-mould",
+  "ratio": {
+   "w": 650,
+   "h": 455
+  },
+  "fallbackW": 650
+ },
+ "telephoneSocket": {
+  "widths": [
+   480,
+   561
+  ],
+  "w": 561,
+  "h": 467,
+  "slug": "telephone-socket-64-cavity-mould",
+  "ratio": {
+   "w": 561,
+   "h": 467
+  },
+  "fallbackW": 561
+ },
+ "eyeDrop": {
+  "widths": [
+   478
+  ],
+  "w": 478,
+  "h": 359,
+  "slug": "eye-drop-nozzle-32-cavity-mould",
+  "ratio": {
+   "w": 478,
+   "h": 359
+  },
+  "fallbackW": 478
+ },
+ "frBaseGrill": {
+  "widths": [
+   480,
+   800,
+   1189
+  ],
+  "w": 1189,
+  "h": 582,
+  "slug": "fr-base-grill-large-injection-mould",
+  "ratio": {
+   "w": 1189,
+   "h": 582
+  },
+  "fallbackW": 800
+ },
+ "frDoorTrim": {
+  "widths": [
+   480,
+   800,
+   1192
+  ],
+  "w": 1192,
+  "h": 647,
+  "slug": "fr-door-trim-lower-large-injection-mould",
+  "ratio": {
+   "w": 1192,
+   "h": 647
+  },
+  "fallbackW": 800
+ },
+ "bPillar": {
+  "widths": [
+   480,
+   800,
+   1192
+  ],
+  "w": 1192,
+  "h": 647,
+  "slug": "b-pillar-large-injection-mould",
+  "ratio": {
+   "w": 1192,
+   "h": 647
+  },
+  "fallbackW": 800
+ },
+ "aPillar": {
+  "widths": [
+   480,
+   800,
+   1192
+  ],
+  "w": 1192,
+  "h": 647,
+  "slug": "a-pillar-large-injection-mould",
+  "ratio": {
+   "w": 1192,
+   "h": 647
+  },
+  "fallbackW": 800
+ },
+ "cowl": {
+  "widths": [
+   480,
+   800,
+   1192
+  ],
+  "w": 1192,
+  "h": 647,
+  "slug": "cowl-large-injection-mould",
+  "ratio": {
+   "w": 1192,
+   "h": 647
+  },
+  "fallbackW": 800
+ },
+ "drPanel": {
+  "widths": [
+   480,
+   800,
+   1192
+  ],
+  "w": 1192,
+  "h": 647,
+  "slug": "dr-panel-large-injection-mould",
+  "ratio": {
+   "w": 1192,
+   "h": 647
+  },
+  "fallbackW": 800
+ },
+ "ctrPanel": {
+  "widths": [
+   480,
+   800,
+   1192
+  ],
+  "w": 1192,
+  "h": 647,
+  "slug": "ctr-panel-large-injection-mould",
+  "ratio": {
+   "w": 1192,
+   "h": 647
+  },
+  "fallbackW": 800
+ },
+ "drCover": {
+  "widths": [
+   480,
+   800,
+   1192
+  ],
+  "w": 1192,
+  "h": 647,
+  "slug": "dr-cover-large-injection-mould",
+  "ratio": {
+   "w": 1192,
+   "h": 647
+  },
+  "fallbackW": 800
+ },
+ "panelCtr": {
+  "widths": [
+   480,
+   800,
+   1192
+  ],
+  "w": 1192,
+  "h": 647,
+  "slug": "panel-ctr-large-injection-mould",
+  "ratio": {
+   "w": 1192,
+   "h": 647
+  },
+  "fallbackW": 800
+ },
+ "licenceGarnish": {
+  "widths": [
+   480,
+   800,
+   1192
+  ],
+  "w": 1192,
+  "h": 647,
+  "slug": "licence-garnish-large-injection-mould",
+  "ratio": {
+   "w": 1192,
+   "h": 647
+  },
+  "fallbackW": 800
+ },
+ "sideSill": {
+  "widths": [
+   480,
+   800,
+   1192
+  ],
+  "w": 1192,
+  "h": 647,
+  "slug": "side-sill-large-injection-mould",
+  "ratio": {
+   "w": 1192,
+   "h": 647
+  },
+  "fallbackW": 800
+ },
+ "wheelArch": {
+  "widths": [
+   480,
+   800,
+   1192
+  ],
+  "w": 1192,
+  "h": 647,
+  "slug": "wheel-arch-lh-rh-injection-mould-parts",
+  "ratio": {
+   "w": 1192,
+   "h": 647
+  },
+  "fallbackW": 800
+ },
+ "wheelCap": {
+  "widths": [
+   480,
+   800,
+   1192
+  ],
+  "w": 1192,
+  "h": 647,
+  "slug": "wheel-cap-large-injection-mould",
+  "ratio": {
+   "w": 1192,
+   "h": 647
+  },
+  "fallbackW": 800
+ },
+ "ornamentFr": {
+  "widths": [
+   480,
+   800,
+   1192
+  ],
+  "w": 1192,
+  "h": 647,
+  "slug": "ornament-sub-assembly-front-door-mould",
+  "ratio": {
+   "w": 1192,
+   "h": 647
+  },
+  "fallbackW": 800
+ },
+ "ornamentRr": {
+  "widths": [
+   480,
+   800,
+   1192
+  ],
+  "w": 1192,
+  "h": 647,
+  "slug": "ornament-sub-assembly-rear-door-trim-mould",
+  "ratio": {
+   "w": 1192,
+   "h": 647
+  },
+  "fallbackW": 800
+ },
+ "coverDrive": {
+  "widths": [
+   480,
+   800,
+   1192
+  ],
+  "w": 1192,
+  "h": 647,
+  "slug": "cover-drive-injection-mould",
+  "ratio": {
+   "w": 1192,
+   "h": 647
+  },
+  "fallbackW": 800
+ },
+ "housingDrive": {
+  "widths": [
+   480,
+   800,
+   1192
+  ],
+  "w": 1192,
+  "h": 647,
+  "slug": "housing-drive-injection-mould",
+  "ratio": {
+   "w": 1192,
+   "h": 647
+  },
+  "fallbackW": 800
+ },
+ "cp1": {
+  "widths": [
+   480,
+   800,
+   1200,
+   1440
+  ],
+  "w": 1440,
+  "h": 960,
+  "slug": "door-lock-actuator-levers-pom",
+  "ratio": {
+   "w": 1440,
+   "h": 960
+  },
+  "fallbackW": 800
+ },
+ "cp2": {
+  "widths": [
+   480,
+   800,
+   1200,
+   1600,
+   2200
+  ],
+  "w": 3695,
+  "h": 2846,
+  "slug": "clip-frame-and-plunger-polycarbonate",
+  "ratio": {
+   "w": 2200,
+   "h": 1695
+  },
+  "fallbackW": 800
+ },
+ "cp3": {
+  "widths": [
+   480,
+   800,
+   1200,
+   1440
+  ],
+  "w": 1440,
+  "h": 960,
+  "slug": "arm-rest-cover-and-movable-cap",
+  "ratio": {
+   "w": 1440,
+   "h": 960
+  },
+  "fallbackW": 800
+ },
+ "protector": {
+  "widths": [
+   480,
+   800,
+   1200,
+   1440
+  ],
+  "w": 1440,
+  "h": 960,
+  "slug": "seat-track-protector-and-power-seat-bush",
+  "ratio": {
+   "w": 1440,
+   "h": 960
+  },
+  "fallbackW": 800
+ },
+ "snapLock": {
+  "widths": [
+   480,
+   800,
+   1200,
+   1209
+  ],
+  "w": 1209,
+  "h": 740,
+  "slug": "door-lock-control-link-and-seat-track-protector",
+  "ratio": {
+   "w": 1209,
+   "h": 740
+  },
+  "fallbackW": 800
+ },
+ "leverLock": {
+  "widths": [
+   480,
+   800,
+   1041
+  ],
+  "w": 1041,
+  "h": 712,
+  "slug": "door-lock-actuator-lever-and-hood-lock-bush",
+  "ratio": {
+   "w": 1041,
+   "h": 712
+  },
+  "fallbackW": 800
+ },
+ "centreTube": {
+  "widths": [
+   480,
+   800,
+   1200,
+   1440
+  ],
+  "w": 1440,
+  "h": 960,
+  "slug": "centre-tube-with-top-and-bottom-caps",
+  "ratio": {
+   "w": 1440,
+   "h": 960
+  },
+  "fallbackW": 800
+ },
+ "airvent": {
+  "widths": [
+   480,
+   800,
+   1084
+  ],
+  "w": 1084,
+  "h": 794,
+  "slug": "airvent-screw-polyamide-6",
+  "ratio": {
+   "w": 1084,
+   "h": 794
+  },
+  "fallbackW": 800
+ },
+ "ledCover2": {
+  "widths": [
+   480,
+   800,
+   1144
+  ],
+  "w": 1144,
+  "h": 789,
+  "slug": "lower-housings-glass-filled-polyamide",
+  "ratio": {
+   "w": 1144,
+   "h": 789
+  },
+  "fallbackW": 800
+ },
+ "overMoulded": {
+  "widths": [
+   480,
+   800,
+   1200,
+   1440
+  ],
+  "w": 1440,
+  "h": 960,
+  "slug": "over-moulded-cover-ppgf40-tpe",
+  "ratio": {
+   "w": 1440,
+   "h": 960
+  },
+  "fallbackW": 800
+ },
+ "hvacFlap": {
+  "widths": [
+   480,
+   800,
+   1200,
+   1440
+  ],
+  "w": 1440,
+  "h": 960,
+  "slug": "hvac-flap-two-component",
+  "ratio": {
+   "w": 1440,
+   "h": 960
+  },
+  "fallbackW": 800
+ },
+ "knob": {
+  "widths": [
+   480,
+   500
+  ],
+  "w": 500,
+  "h": 500,
+  "slug": "knob-upper-pc-asa",
+  "ratio": {
+   "w": 500,
+   "h": 500
+  },
+  "fallbackW": 500
+ },
+ "dial": {
+  "widths": [
+   480,
+   500
+  ],
+  "w": 500,
+  "h": 500,
+  "slug": "dial-r-l-pc-abs-tpe",
+  "ratio": {
+   "w": 500,
+   "h": 500
+  },
+  "fallbackW": 500
+ }
+}

@@ -6,12 +6,13 @@
   "type": "module",
   "scripts": {
     "images": "node src/images.mjs",
-    "build": "node src/images.mjs && node src/build.mjs",
+    "build": "node src/build.mjs",
     "build:pages": "node src/build.mjs",
     "serve": "node scripts/dev-server.mjs",
     "check": "node scripts/check.mjs",
     "e2e": "node scripts/e2e.mjs",
-    "test": "npm run build && npm run check && npm run e2e"
+    "test": "npm run build && npm run check && npm run e2e",
+    "build:full": "node src/images.mjs && node src/build.mjs"
   },
   "dependencies": {
     "sharp": "^0.35.5"

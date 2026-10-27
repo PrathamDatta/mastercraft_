@@ -8,7 +8,7 @@ const root = path.resolve(import.meta.dirname, '..');
 const INLINE_JS = "document.documentElement.classList.add('js')";
 const INLINE_HASH = crypto.createHash('sha256').update(INLINE_JS).digest('base64');
 const CSP = `default-src 'self'; script-src 'self' 'sha256-${INLINE_HASH}'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; frame-src https://www.youtube-nocookie.com; connect-src 'self'; form-action 'self'; base-uri 'self'; object-src 'none'`;
-export const MANIFEST = JSON.parse(fs.readFileSync(path.join(root, '.cache/img-manifest.json'), 'utf8'));
+export const MANIFEST = JSON.parse(fs.readFileSync(path.join(root, 'generated/img-manifest.json'), 'utf8'));
 
 export const esc = (s = '') => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 export const abs = (p) => SITE.url + p;

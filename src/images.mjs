@@ -6,8 +6,9 @@ import { IMAGES, WIDTHS } from './images.config.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
 const srcDir = path.join(root, 'src/assets/img-src');
-const outDir = path.join(root, 'dist/assets/img');
-const cacheDir = path.join(root, '.cache');
+// Generated images are committed (generated/) so deploys never re-encode them; run `npm run images` after changing photos.
+const outDir = path.join(root, 'generated/img');
+const cacheDir = path.join(root, 'generated');
 fs.mkdirSync(outDir, { recursive: true });
 fs.mkdirSync(cacheDir, { recursive: true });
 

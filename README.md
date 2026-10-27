@@ -10,7 +10,8 @@ Static redesign of https://mastercraftengineers.com/ (previously WordPress 5.2.2
 
 ```bash
 npm install
-npm run build     # images (AVIF/WebP/JPEG, cached) -> pages -> dist/
+npm run build     # pages + assets -> dist/ (uses the committed generated/img photos; fast)
+npm run images    # re-encode photos from src/assets/img-src into generated/ (slow; run after changing photos, then commit)
 npm run serve     # http://127.0.0.1:8080 (static dist/ + /api/contact; set MC_MAIL_DRY_RUN=1 to log mail instead of sending)
 npm run check     # static SEO/link/structured-data checks over dist/
 npm run e2e       # Playwright (needs `playwright` + Chromium installed): overflow, console errors, axe a11y, keyboard, form, reduced-motion, no-JS

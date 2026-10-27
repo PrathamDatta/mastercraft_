@@ -38,6 +38,7 @@ write('404.html', notFoundPage());
 await esbuild({ entryPoints: [path.join(root, 'src/assets/css/main.css')], outfile: path.join(dist, 'assets/css/main.css'), minify: true, bundle: false, loader: { '.css': 'css' }, logLevel: 'warning' });
 await esbuild({ entryPoints: [path.join(root, 'src/assets/js/main.js')], outfile: path.join(dist, 'assets/js/main.js'), minify: true, bundle: false, target: 'es2019', logLevel: 'warning' });
 fs.cpSync(path.join(root, 'src/assets/fonts'), path.join(dist, 'assets/fonts'), { recursive: true });
+fs.cpSync(path.join(root, 'generated/img'), path.join(dist, 'assets/img'), { recursive: true });
 
 // ---- static files ----
 const st = path.join(root, 'src/static');

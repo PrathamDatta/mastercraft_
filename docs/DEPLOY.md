@@ -18,7 +18,7 @@
    | `CONTACT_TO` | optional; defaults to `info@mcraft.net` |
 
    Without these the form shows a friendly fallback ("email info@mcraft.net or call …") and logs an error. Any other transactional email provider can be swapped in inside `api/contact.js` (one `fetch` call).
-3. The first build runs the image pipeline (AVIF/WebP for ~50 photos). Expect a few minutes; later builds are the same because Vercel does not keep `.cache`. If build time ever becomes a concern, commit the generated `dist/assets/img` or move to a cached build step.
+3. Optimised photos (AVIF/WebP/JPEG) are **committed in `generated/img`**, so the Vercel build only assembles pages and takes seconds. Encoding ~500 images on Vercel's 2-core builder took many minutes with no log output, so it was moved out of the deploy. After adding/changing a photo run `npm run images` and commit `generated/`.
 
 ## Preview first
 Every push to a branch gets a preview URL. Test there: pages, the form (send a real enquiry; confirm it arrives at `CONTACT_TO` and that Reply-To is the visitor), `/robots.txt`, `/sitemap.xml`, a made-up URL (styled 404 with HTTP 404), old image URL redirect, e.g. `/wp/wp-content/uploads/2019/10/machining5.jpg`. Previews are not indexed by default (Vercel adds `X-Robots-Tag: noindex` to `*.vercel.app` previews).
