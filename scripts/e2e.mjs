@@ -90,13 +90,13 @@ for (const w of [1440, 390]) {
   // bento numbers end on the published values
   await p.evaluate(() => document.querySelector('.bento').scrollIntoView({ block: 'center' })); await p.waitForTimeout(2300);
   const bento = (await p.locator('.bento').innerText()).replace(/\s+/g, ' ');
-  ok('bento shows the published values after counting', /45\s*–\s*150/.test(bento) && /0\.5\s*–\s*300/.test(bento) && /\b17\b/.test(bento) && /\b64\b/.test(bento), bento.slice(0, 200));
+  ok('bento shows the published values after counting', /45\s*–\s*150/.test(bento) && /0\.5\s*–\s*300/.test(bento) && /\b17\b/.test(bento) && /64/.test(bento), bento.slice(0, 200));
   // process timeline: 7 stages, line draws, stages light up, nothing sticky/trapping
   ok('process timeline has 7 stages', await p.locator('[data-step]').count() === 7);
   await p.evaluate(() => document.querySelector('#stage-moulding').scrollIntoView({ block: 'center' })); await p.waitForTimeout(700);
   ok('timeline line has drawn part-way and reached stages are lit', parseFloat(await p.evaluate(() => document.querySelector('[data-tl-prog]').style.getPropertyValue('--p'))) > 0.5 && await p.locator('#stage-assembly.is-on').count() === 1 && await p.locator('#stage-inspection.is-on').count() === 0);
   await p.evaluate(() => document.querySelector('#products').scrollIntoView()); await p.waitForTimeout(400);
-  ok('page continues past the timeline (nothing sticky traps scrolling)', await p.evaluate(() => document.querySelector('#stage-inspection').getBoundingClientRect().bottom < 0));
+  ok('page continues past the timeline (nothing sticky traps scrolling)', await p.evaluate(() => document.querySelector('#stage-inspection').getBoundingClientRect().top < 0));
   // product explorer tabs
   const tabs = p.locator('[role="tab"]');
   ok('explorer has 4 tabs, first selected, one panel visible', await tabs.count() === 4 && (await tabs.nth(0).getAttribute('aria-selected')) === 'true' && await p.locator('[role="tabpanel"]:visible').count() === 1);

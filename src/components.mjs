@@ -100,12 +100,12 @@ export function productExplorer() {
       ${cats.map((c, i) => `<button class="tab" role="tab" type="button" id="tab-${c.id}" aria-controls="panel-${c.id}" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}"><span class="tab__n">${c.n}</span><strong>${esc(c.title)}</strong>${arr}<small>${esc(c.sub)}</small></button>`).join('')}
     </div>
     <div class="explorer__panels">
-      ${cats.map((c, i) => `<article class="panel" role="tabpanel" id="panel-${c.id}" aria-labelledby="tab-${c.id}"${i ? ' data-initial-hidden' : ''}>
+      ${cats.map((c, i) => `<div class="panel" role="tabpanel" id="panel-${c.id}" aria-labelledby="tab-${c.id}"${i ? ' data-initial-hidden' : ''}>
         <div class="plate">${pic(c.img, { sizes: '(min-width: 960px) 34vw, 90vw', maxW: 1200 })}</div>
         <div class="panel__body"><p class="mono panel__k">${esc(c.title)}</p><h3 class="h3">${esc(c.sub.split(' · ').pop().replace(/^up to /, 'Up to '))}</h3><p>${esc(c.text)}</p>
           <ul class="panel__stats">${c.stats.map(t => `<li>${esc(t)}</li>`).join('')}</ul>
           <a class="link-arrow" href="${c.href}">${esc(c.cta)}${arrow}</a></div>
-      </article>`).join('')}
+      </div>`).join('')}
     </div>
   </div>`;
 }
