@@ -1,12 +1,10 @@
-/* Mastercraft Engineers — interaction layer. No dependencies.
+/* Mastercraft Engineers — Variant B interaction layer. No dependencies.
    Everything here is progressive enhancement: the pages are complete without it.
-   Effects are skipped under prefers-reduced-motion, and pointer effects only run for a real mouse. */
+   Motion is skipped under prefers-reduced-motion. */
 (function () {
   'use strict';
   var doc = document, root = doc.documentElement;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-  var fine = window.matchMedia('(hover: hover) and (pointer: fine)');
-  var desktop = window.matchMedia('(min-width: 960px)');
   var $ = function (s, c) { return (c || doc).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || doc).querySelectorAll(s)); };
   var hasIO = 'IntersectionObserver' in window;
@@ -40,7 +38,7 @@
     nav.classList.toggle('is-open', open);
     doc.body.classList.toggle('nav-open', open);
     toggle.querySelector('.menu-toggle__label').textContent = open ? 'Close' : 'Menu';
-    if (open) { header.classList.remove('is-hidden'); var first = $('a', nav); if (first) first.focus({ preventScroll: true }); }
+    if (open) { var first = $('a', nav); if (first) first.focus({ preventScroll: true }); }
   }
   if (toggle && nav) {
     toggle.addEventListener('click', function () { setMenu(toggle.getAttribute('aria-expanded') !== 'true'); });
@@ -76,32 +74,11 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
 
-  // scroll progress bar
   var bar = $('[data-progress]');
   if (bar) tasks.push(function (y, vh) { var h = doc.documentElement.scrollHeight - vh; bar.style.setProperty('--p', h > 0 ? (y / h).toFixed(4) : 0); });
-
-  // header: solid once scrolled, tucks away on scroll down, returns on scroll up
-  if (header) {
-    var lastY = window.scrollY;
-    tasks.push(function (y) {
-      header.classList.toggle('is-stuck', y > 24);
-      var menuOpen = doc.body.classList.contains('nav-open');
-      if (!menuOpen && y > 500 && y > lastY + 6) header.classList.add('is-hidden');
-      else if (y < lastY - 6 || y <= 500) header.classList.remove('is-hidden');
-      lastY = y;
-    });
-  }
+  if (header) tasks.push(function (y) { header.classList.toggle('is-stuck', y > 24); });
 
   if (motion) {
-    // giant tagline rows slide sideways as they cross the viewport
-    var kin = $$('[data-kinetic]');
-    if (kin.length) tasks.push(function (y, vh) {
-      kin.forEach(function (row) {
-        var r = row.getBoundingClientRect(); if (r.bottom < -50 || r.top > vh + 50) return;
-        var p = (vh - r.top) / (vh + r.height);
-        row.style.transform = 'translate3d(' + ((p - 0.5) * 520 * parseFloat(row.getAttribute('data-kinetic'))).toFixed(1) + 'px,0,0)';
-      });
-    });
     // gentle image parallax inside masked frames
     var par = $$('[data-parallax-y]');
     if (par.length) tasks.push(function (y, vh) {
@@ -112,24 +89,18 @@
         img.style.transform = 'translate3d(0,' + (p * parseFloat(el.getAttribute('data-parallax-y'))).toFixed(1) + 'px,0)';
       });
     });
-    // big outlined year fills with orange as the section scrolls in
-    var fill = $$('[data-fill]');
-    if (fill.length) tasks.push(function (y, vh) {
-      fill.forEach(function (el) { var r = el.getBoundingClientRect(); el.style.setProperty('--fill', (clamp((vh * 0.95 - r.top) / (vh * 0.9), 0, 1) * 100).toFixed(1) + '%'); });
-    });
-    // process deck: cards sink and dim as the next one stacks over them
-    var cards = $$('[data-card]');
-    if (cards.length) tasks.push(function (y, vh) {
-      var on = desktop.matches && vh > 640;
-      cards.forEach(function (c, i) {
-        var d = 0;
-        if (on && cards[i + 1]) {
-          var top = c.getBoundingClientRect().top, nextTop = cards[i + 1].getBoundingClientRect().top;
-          d = clamp(1 - (nextTop - top - 16) / (vh * 0.7), 0, 1);
-        }
-        c.style.setProperty('--d', d.toFixed(3));
+    // process timeline: the orange line draws down the page and each stage lights up as it is reached
+    var tl = $('[data-tl]');
+    if (tl) {
+      var prog = $('[data-tl-prog]', tl), items = $$('[data-step]', tl);
+      tasks.push(function (y, vh) {
+        var r = tl.getBoundingClientRect();
+        prog.style.setProperty('--p', clamp((vh * 0.55 - r.top) / r.height, 0, 1).toFixed(4));
+        items.forEach(function (it) { it.classList.toggle('is-on', $('.tl__dot', it).getBoundingClientRect().top < vh * 0.62); });
       });
-    });
+    }
+  } else {
+    $$('[data-step]').forEach(function (it) { it.classList.add('is-on'); });
   }
   onScroll();
 
@@ -149,102 +120,33 @@
   if (hasIO && motion) {
     var cio = new IntersectionObserver(function (es) {
       es.forEach(function (e) { if (e.isIntersecting) { $$('[data-count-to]', e.target).forEach(countUp); cio.unobserve(e.target); } });
-    }, { threshold: 0.35 });
-    $$('.stats, [data-ruler]').forEach(function (el) { cio.observe(el); });
+    }, { threshold: 0.3 });
+    $$('.bento, [data-ruler]').forEach(function (el) { cio.observe(el); });
   }
 
-  /* ---------- pause looping animations while off-screen ---------- */
-  if (hasIO) {
-    var offio = new IntersectionObserver(function (es) {
-      es.forEach(function (e) {
-        if (e.target.classList.contains('hero')) e.target.classList.toggle('is-off', !e.isIntersecting);
-        else e.target.classList.toggle('is-paused', !e.isIntersecting);
-      });
-    });
-    $$('.hero, .marquee').forEach(function (el) { offio.observe(el); });
-  }
+  /* ---------- pause the hero's looping animations while off-screen ---------- */
+  var hero = $('.hero');
+  if (hero && hasIO) new IntersectionObserver(function (es) { hero.classList.toggle('is-off', !es[0].isIntersecting); }).observe(hero);
 
-  /* ---------- hero: colour spotlight follows the pointer (drifts on its own otherwise) ---------- */
-  var hero = $('[data-hero]');
-  if (hero && motion) {
-    var tx = 0.66, ty = 0.46, cx = tx, cy = ty, lastMove = -1e9, heroVis = true, raf = 0, frameN = 0, t0 = performance.now();
-    var chips = $$('.chip', hero).map(function (c) { return { el: c, d: parseFloat(c.getAttribute('data-depth') || '0.5') }; });
-    var heroTick = function (now) {
-      raf = 0; if (!heroVis) return;
-      var idle = now - lastMove > 2500;
-      if (idle) { var t = (now - t0) / 1000; tx = 0.64 + Math.cos(t * 0.45) * 0.17; ty = 0.46 + Math.sin(t * 0.6) * 0.13; }
-      cx += (tx - cx) * 0.07; cy += (ty - cy) * 0.07;
-      if (!idle || (++frameN & 1)) { // idle drift updates at half rate to keep it cheap
-        hero.style.setProperty('--mx', (cx * 100).toFixed(1) + '%'); hero.style.setProperty('--my', (cy * 100).toFixed(1) + '%');
-        chips.forEach(function (c) { c.el.style.transform = 'translate3d(' + ((cx - 0.5) * -c.d * 60).toFixed(1) + 'px,' + ((cy - 0.5) * -c.d * 40).toFixed(1) + 'px,0)'; });
-      }
-      raf = requestAnimationFrame(heroTick);
-    };
-    var heroStart = function () { if (!raf && heroVis) raf = requestAnimationFrame(heroTick); };
-    hero.addEventListener('pointermove', function (e) {
-      if (e.pointerType === 'touch') return;
-      var r = hero.getBoundingClientRect(); tx = (e.clientX - r.left) / r.width; ty = (e.clientY - r.top) / r.height; lastMove = performance.now();
-    });
-    if (hasIO) new IntersectionObserver(function (es) { heroVis = es[0].isIntersecting; if (heroVis) heroStart(); }).observe(hero);
-    heroStart();
-  }
-
-  /* ---------- pointer effects (mouse only) ---------- */
-  if (fine.matches && motion) {
-    // 3D tilt with moving glare
-    $$('.tilt').forEach(function (el) {
-      el.addEventListener('pointermove', function (e) {
-        if (e.pointerType !== 'mouse') return;
-        var r = el.getBoundingClientRect(), px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
-        el.style.setProperty('--ry', ((px - 0.5) * 11).toFixed(2) + 'deg'); el.style.setProperty('--rx', ((0.5 - py) * 9).toFixed(2) + 'deg');
-        el.style.setProperty('--gx', (px * 100).toFixed(1) + '%'); el.style.setProperty('--gy', (py * 100).toFixed(1) + '%');
-        el.classList.add('is-tilting');
-      });
-      el.addEventListener('pointerleave', function () { el.classList.remove('is-tilting'); el.style.setProperty('--rx', '0deg'); el.style.setProperty('--ry', '0deg'); });
-    });
-    // magnetic buttons
-    $$('.magnetic').forEach(function (el) {
-      var kids = Array.prototype.slice.call(el.children);
-      el.addEventListener('pointermove', function (e) {
-        var r = el.getBoundingClientRect(), dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
-        el.style.transform = 'translate(' + (dx * 0.22).toFixed(1) + 'px,' + (dy * 0.32).toFixed(1) + 'px)';
-        kids.forEach(function (k) { k.style.transform = 'translate(' + (dx * 0.1).toFixed(1) + 'px,' + (dy * 0.16).toFixed(1) + 'px)'; });
-      });
-      el.addEventListener('pointerleave', function () { el.style.transform = ''; kids.forEach(function (k) { k.style.transform = ''; }); });
-    });
-    // cursor ring (the native cursor stays visible; this is an accent)
-    var cur = $('[data-cursor]');
-    if (cur) {
-      root.classList.add('has-cursor');
-      var label = $('.cursor__label', cur), px = -100, py = -100, ox = -100, oy = -100, craf = 0;
-      var move = function () { ox += (px - ox) * 0.2; oy += (py - oy) * 0.2; cur.style.transform = 'translate3d(' + ox.toFixed(1) + 'px,' + oy.toFixed(1) + 'px,0)'; craf = (Math.abs(px - ox) + Math.abs(py - oy) > 0.4) ? requestAnimationFrame(move) : 0; };
-      window.addEventListener('pointermove', function (e) { if (e.pointerType !== 'mouse') return; px = e.clientX; py = e.clientY; cur.classList.add('is-on'); if (!craf) craf = requestAnimationFrame(move); }, { passive: true });
-      doc.addEventListener('pointerleave', function () { cur.classList.remove('is-on'); });
-      doc.addEventListener('pointerover', function (e) {
-        var lab = e.target.closest && e.target.closest('[data-cursor-label]');
-        if (lab) { label.textContent = lab.getAttribute('data-cursor-label'); cur.classList.add('has-label'); cur.classList.remove('is-link'); return; }
-        cur.classList.remove('has-label');
-        cur.classList.toggle('is-link', !!(e.target.closest && e.target.closest('a, button, summary, input, select, textarea, label')));
-      });
+  /* ---------- product explorer: accessible tabs ---------- */
+  $$('[data-tabs]').forEach(function (box) {
+    var tabs = $$('[role="tab"]', box), panels = $$('[role="tabpanel"]', box);
+    function select(i, focus) {
+      tabs.forEach(function (t, k) { t.setAttribute('aria-selected', String(k === i)); t.tabIndex = k === i ? 0 : -1; });
+      panels.forEach(function (p, k) { p.hidden = k !== i; });
+      if (focus) tabs[i].focus();
     }
-  }
-
-  /* ---------- product rail: buttons, progress, mouse drag ---------- */
-  $$('[data-rail]').forEach(function (rail) {
-    var sec = rail.closest('section'), barEl = $('[data-rail-bar]', sec), prev = $('[data-rail-prev]', sec), next = $('[data-rail-next]', sec);
-    function upd() {
-      var sw = rail.scrollWidth, cw = rail.clientWidth;
-      if (barEl) { barEl.style.setProperty('--w', (cw / sw * 100).toFixed(1) + '%'); barEl.style.setProperty('--x', (rail.scrollLeft / sw * 100).toFixed(2)); }
-    }
-    function by(dir) { var c = $('.pcard', rail); var step = c ? c.getBoundingClientRect().width + 24 : 400; rail.scrollBy({ left: dir * step, behavior: motion ? 'smooth' : 'auto' }); }
-    if (prev) prev.addEventListener('click', function () { by(-1); });
-    if (next) next.addEventListener('click', function () { by(1); });
-    rail.addEventListener('scroll', upd, { passive: true }); window.addEventListener('resize', upd); upd();
-    var down = false, sx = 0, sl = 0, moved = 0;
-    rail.addEventListener('pointerdown', function (e) { if (e.pointerType !== 'mouse') return; down = true; moved = 0; sx = e.clientX; sl = rail.scrollLeft; });
-    window.addEventListener('pointermove', function (e) { if (!down) return; var dx = e.clientX - sx; moved = Math.max(moved, Math.abs(dx)); if (moved > 6) { rail.style.scrollSnapType = 'none'; rail.scrollLeft = sl - dx; } });
-    window.addEventListener('pointerup', function () { if (!down) return; down = false; rail.style.scrollSnapType = ''; });
-    rail.addEventListener('click', function (e) { if (moved > 6) { e.preventDefault(); e.stopPropagation(); moved = 0; } }, true);
+    select(0, false);
+    tabs.forEach(function (t, i) {
+      t.addEventListener('click', function () { select(i, false); });
+      t.addEventListener('keydown', function (e) {
+        var n = tabs.length, k = i;
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') k = (i + 1) % n;
+        else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') k = (i - 1 + n) % n;
+        else if (e.key === 'Home') k = 0; else if (e.key === 'End') k = n - 1; else return;
+        e.preventDefault(); select(k, true);
+      });
+    });
   });
 
   /* ---------- mould anatomy hotspots ---------- */

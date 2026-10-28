@@ -21,36 +21,93 @@ export const STATS = (() => {
 
 export const fmt = (n) => String(n);
 
-// ---------- Process: stacked card deck (sticky cards that pile up, then release) ----------
+// ---------- Process: zig-zag timeline with a line that draws as you scroll ----------
 export function processSection({ headingLevel = 2 } = {}) {
   const inspected = new Set(['machining', 'moulding', 'inspection']);
-  const n = PROCESS.length;
-  return `<section class="section section--black deck" id="process" aria-labelledby="process-h" data-deck>
-  <div class="deck__glow" aria-hidden="true"></div>
+  return `<section class="section section--tint process" id="process" aria-labelledby="process-h">
   <div class="container">
-    <header class="deck__head">
+    <header class="sec-head sec-head--center">
       <p class="eyebrow"><span class="idx">02</span> Process</p>
       <h${headingLevel} id="process-h" class="h2">From <em>project planning</em> to inspected parts</h${headingLevel}>
       <p class="lede">Seven stages, each documented on the facilities page. Inspection applies to mould inserts and to the plastic components.</p>
-      <ul class="deck__jump" aria-label="Jump to a stage">${PROCESS.map(s => `<li><a href="#stage-${s.id}"><span>${s.n}</span>${esc(s.title)}</a></li>`).join('')}</ul>
     </header>
-    <ol class="deck__list">
-      ${PROCESS.map((s, i) => `<li class="card" id="stage-${s.id}" data-card style="--i:${i}">
-        <div class="card__inner">
-          <div class="card__text">
-            <span class="card__no" aria-hidden="true">${s.n}</span>
-            <p class="mono card__grp">${esc(s.group)}${inspected.has(s.id) ? ' <b class="tag">Inspection point</b>' : ''}</p>
-            <h3 class="h3">${esc(s.title)}</h3>
-            <p class="card__p">${esc(s.text)}</p>
-            <dl class="facts">${s.facts.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
-            <p class="mono card__count">${s.n} <i>/ ${String(n).padStart(2, '0')}</i></p>
+    <div class="tl" data-tl>
+      <div class="tl__prog" data-tl-prog aria-hidden="true"></div>
+      <ol class="tl__list">
+        ${PROCESS.map((s, i) => `<li class="tl__item reveal" id="stage-${s.id}" data-step="${i}">
+          <span class="tl__dot" aria-hidden="true">${s.n}</span>
+          <div class="tl__card">
+            <figure class="tl__fig reveal-mask">${pic(s.img, { sizes: '(min-width: 860px) 46vw, 80vw', maxW: 1200 })}</figure>
+            <div class="tl__body">
+              <p class="tl__tags"><span class="tag">${esc(s.group)}</span>${inspected.has(s.id) ? '<span class="tag tag--solid">Inspection point</span>' : ''}</p>
+              <h3 class="h3">${esc(s.title)}</h3>
+              <p>${esc(s.text)}</p>
+              <dl class="facts">${s.facts.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
+            </div>
           </div>
-          <figure class="card__fig reveal-mask scan">${pic(s.img, { sizes: '(min-width: 960px) 46vw, 92vw', maxW: 1200 })}</figure>
-        </div>
-      </li>`).join('')}
-    </ol>
+        </li>`).join('')}
+      </ol>
+    </div>
   </div>
 </section>`;
+}
+
+// ---------- Bento "what we do" grid (numbers are the published figures) ----------
+export function bentoSection() {
+  const go = '<span class="tile__go" aria-hidden="true"><svg width="18" height="12" viewBox="0 0 18 12"><path d="M0 6h16M11 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></span>';
+  return `<section class="bento" aria-labelledby="bento-h">
+  <div class="container">
+    <h2 id="bento-h" class="sr-only">Capabilities at a glance</h2>
+    <div class="bento__grid">
+      <a class="tile tile--orange reveal" href="/facilities/#moulding">${go}
+        <div><p class="tile__k">Injection moulding</p>
+        <div class="tile__stack">
+          <div><p class="tile__n"><span data-count-to="45">45</span>–<span data-count-to="150">150</span><small>t</small></p><p class="tile__t">Clamping capacity of the moulding machines</p></div>
+          <div><p class="tile__n"><span data-count-to="0.5" data-dec="1">0.5</span>–<span data-count-to="300">300</span><small>g</small></p><p class="tile__t">Moulded part weight range, monitored by hourly SPC</p></div>
+        </div></div>
+        <div class="tile__img">${pic('moulding', { sizes: '(min-width: 1100px) 40vw, 90vw', maxW: 1200, alt: 'Row of injection moulding machines in the production hall' })}</div>
+      </a>
+      <a class="tile tile--photo reveal" href="/facilities/#machining">${go}${pic('machining2', { sizes: '(min-width: 1100px) 30vw, 90vw', maxW: 1200, decorative: true })}
+        <div class="tile__label"><strong>Precision machining</strong><span>5-axis and 3-axis machining centres, wire EDM and CNC EDM</span></div></a>
+      <a class="tile tile--tint reveal" href="/large-size-injection-moulds/">${go}
+        <p class="tile__k">Large moulds</p>
+        <div><p class="tile__n"><span data-count-to="${STATS.largeCount}">${STATS.largeCount}</span></p><p class="tile__t">documented, from ${STATS.largeMin} to ${STATS.largeMax} tonnes</p></div></a>
+      <a class="tile tile--photo reveal" href="/quality/">${go}${pic('qualityCmm', { sizes: '(min-width: 1100px) 30vw, 90vw', maxW: 1200, decorative: true })}
+        <div class="tile__label"><strong>Quality inspection</strong><span>CMM touch probe, video and laser measurement · MFI · SPC</span></div></a>
+      <a class="tile tile--tint2 reveal" href="/injection-moulds/">${go}
+        <p class="tile__k">Small precision moulds</p>
+        <div><p class="tile__n"><span data-count-to="${STATS.maxCavities}">${STATS.maxCavities}</span><small>cavities</small></p><p class="tile__t">in the largest documented small mould (${STATS.smallCount} moulds listed)</p></div></a>
+    </div>
+  </div>
+</section>`;
+}
+
+// ---------- Product explorer (tabs) ----------
+export function productExplorer() {
+  const cats = [
+    { id: 'large', n: '01', title: 'Large injection moulds', sub: `${STATS.largeCount} documented · ${STATS.largeMin}–${STATS.largeMax} t`, href: '/large-size-injection-moulds/', img: 'frDoorTrim',
+      text: `Moulds for door trims, pillars, a cowl, a side sill and wheel arches, with hot-runner configurations of up to six drops.`, stats: [`${STATS.largeCount} documented moulds`, `${STATS.largeMin}–${STATS.largeMax} t`, 'Up to 6 hot-runner drops'], cta: 'View the large moulds' },
+    { id: 'small', n: '02', title: 'Small precision injection moulds', sub: `${STATS.smallCount} documented · up to ${STATS.maxCavities} cavities`, href: '/injection-moulds/', img: 'mouldSmall1',
+      text: 'Compact production tools, from a two-cavity battery-lid mould to a 64-cavity mould for telephone socket parts.', stats: [`${STATS.smallCount} documented moulds`, `2 to ${STATS.maxCavities} cavities`, 'PP, PC FR, LDPE and more'], cta: 'View the small moulds' },
+    { id: 'components', n: '03', title: 'Plastic moulded components', sub: `${STATS.partCount} parts · ${STATS.partMin}–${STATS.partMax} g`, href: '/components/', img: 'componentsHero',
+      text: 'Precision parts with weight and plastic raw material documented for each one.', stats: [`${STATS.partCount} parts`, `${STATS.partMin}–${STATS.partMax} g`, 'POM, PC, PP, PA 6'], cta: 'View the components' },
+    { id: 'twok', n: '04', title: 'Two-component (2K) parts', sub: `${STATS.twokCount} documented parts`, href: '/2k-parts/', img: 'hvacFlap',
+      text: 'Parts moulded from two materials in one part, such as a glass-filled polypropylene with a thermoplastic elastomer.', stats: [`${STATS.twokCount} documented parts`, 'PPGF40 + TPE', 'PCABS + TPE'], cta: 'View the 2K parts' }
+  ];
+  const arr = '<svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true"><path d="M0 6h16M11 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
+  return `<div class="explorer" data-tabs>
+    <div class="explorer__tabs" role="tablist" aria-label="Product categories" aria-orientation="vertical">
+      ${cats.map((c, i) => `<button class="tab" role="tab" type="button" id="tab-${c.id}" aria-controls="panel-${c.id}" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}"><span class="tab__n">${c.n}</span><strong>${esc(c.title)}</strong>${arr}<small>${esc(c.sub)}</small></button>`).join('')}
+    </div>
+    <div class="explorer__panels">
+      ${cats.map((c, i) => `<article class="panel" role="tabpanel" id="panel-${c.id}" aria-labelledby="tab-${c.id}"${i ? ' data-initial-hidden' : ''}>
+        <div class="plate">${pic(c.img, { sizes: '(min-width: 960px) 34vw, 90vw', maxW: 1200 })}</div>
+        <div class="panel__body"><p class="mono panel__k">${esc(c.title)}</p><h3 class="h3">${esc(c.sub.split(' · ').pop().replace(/^up to /, 'Up to '))}</h3><p>${esc(c.text)}</p>
+          <ul class="panel__stats">${c.stats.map(t => `<li>${esc(t)}</li>`).join('')}</ul>
+          <a class="link-arrow" href="${c.href}">${esc(c.cta)}${arrow}</a></div>
+      </article>`).join('')}
+    </div>
+  </div>`;
 }
 
 // ---------- Mould anatomy (annotated real photograph) ----------

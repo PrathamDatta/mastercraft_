@@ -121,7 +121,7 @@ export function layout({ path: pagePath, title, description, body, ld = [], noin
 <meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${canonical}">
 <meta name="robots" content="${noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large'}">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#f18325">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${SITE.name}">
 <meta property="og:locale" content="en_IN">
@@ -135,8 +135,8 @@ export function layout({ path: pagePath, title, description, body, ld = [], noin
 <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/favicon-192x192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preload" href="/assets/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/assets/fonts/instrument-serif-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/figtree.woff2" as="font" type="font/woff2" crossorigin>
 ${preload.join('\n')}
 <script>${INLINE_JS}</script>
 <link rel="stylesheet" href="/assets/css/main.css?v=${ASSET_V}">
@@ -146,12 +146,11 @@ ${preload.join('\n')}
 <body class="${pageClass}">
 ${SPRITE}
 <div class="progress" data-progress aria-hidden="true"></div>
-<div class="cursor" data-cursor aria-hidden="true"><span class="cursor__label"></span></div>
 <a class="skip" href="#main">Skip to main content</a>
-<header class="site-header" data-header data-tone="${headerTone}">
-  <div class="container nav-inner">
+<header class="site-header" data-header>
+  <div class="bar">
     <a class="brand" href="/" aria-label="Mastercraft Engineers, home">
-      <picture><source type="image/webp" srcset="/assets/img/mastercraft-logo-light.webp"><img src="/assets/img/mastercraft-logo-light.png" width="400" height="106" alt="Mastercraft Engineers" fetchpriority="high"></picture>
+      <picture><source type="image/webp" srcset="/assets/img/mastercraft-logo.webp"><img src="/assets/img/mastercraft-logo.png" width="400" height="106" alt="Mastercraft Engineers" fetchpriority="high"></picture>
     </a>
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav"><span class="menu-toggle__bars" aria-hidden="true"></span><span class="menu-toggle__label">Menu</span></button>
     <nav class="primary-nav" id="primary-nav" aria-label="Primary">
@@ -164,25 +163,29 @@ ${SPRITE}
 ${body}
 </main>
 <footer class="site-footer">
-  <div class="footer-mark" aria-hidden="true"><span>Mastercraft</span></div>
-  <div class="container footer-grid">
-    <div class="footer-brand">
-      <picture><source type="image/webp" srcset="/assets/img/mastercraft-logo-light.webp"><img src="/assets/img/mastercraft-logo-light.png" width="400" height="106" alt="Mastercraft Engineers" loading="lazy" decoding="async"></picture>
-      <p class="footer-tag">${SITE.tagline}</p>
-      <p class="footer-blurb">Precision injection mould design and manufacturing, and plastic injection moulding, in Bengaluru since ${SITE.founded}.</p>
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <picture><source type="image/webp" srcset="/assets/img/mastercraft-logo.webp"><img src="/assets/img/mastercraft-logo.png" width="400" height="106" alt="Mastercraft Engineers" loading="lazy" decoding="async"></picture>
+        <p class="footer-tag">${SITE.tagline}</p>
+        <p class="footer-blurb">Precision injection mould design and manufacturing, and plastic injection moulding, in Bengaluru since ${SITE.founded}.</p>
+        <a class="btn btn--ink btn--sm" href="/contact/">Discuss your project</a>
+      </div>
+      <div class="footer-cols">
+        ${FOOTER_LINKS.map(([h, links]) => `<nav aria-label="${h}"><h2 class="footer-h">${h}</h2><ul>${links.map(([href, l]) => `<li><a href="${href}">${l}</a></li>`).join('')}</ul></nav>`).join('')}
+        <address class="footer-contact">
+          <h2 class="footer-h">Contact</h2>
+          <p>${esc(SITE.legalName)}<br>${a.lines.map(esc).join('<br>')}</p>
+          <p>${SITE.phones.map(p => `<a href="tel:${p.tel}">${p.display}</a>`).join('<br>')}</p>
+          <p><a href="mailto:${SITE.email}">${SITE.email}</a></p>
+          <p><a href="${SITE.mapsLink}" rel="noopener" target="_blank">Open in Google Maps<span class="sr-only"> (opens in a new tab)</span></a></p>
+        </address>
+      </div>
     </div>
-    ${FOOTER_LINKS.map(([h, links]) => `<nav aria-label="${h}"><h2 class="footer-h">${h}</h2><ul>${links.map(([href, l]) => `<li><a href="${href}">${l}</a></li>`).join('')}</ul></nav>`).join('')}
-    <address class="footer-contact">
-      <h2 class="footer-h">Contact</h2>
-      <p>${esc(SITE.legalName)}<br>${a.lines.map(esc).join('<br>')}</p>
-      <p>${SITE.phones.map(p => `<a href="tel:${p.tel}">${p.display}</a>`).join('<br>')}</p>
-      <p><a href="mailto:${SITE.email}">${SITE.email}</a></p>
-      <p><a href="${SITE.mapsLink}" rel="noopener" target="_blank">Open in Google Maps<span class="sr-only"> (opens in a new tab)</span></a></p>
-    </address>
-  </div>
-  <div class="container footer-base">
-    <p>© ${new Date().getFullYear()} ${esc(SITE.legalName)} All rights reserved.</p>
-    <p><a href="${SITE.youtube}" rel="noopener" target="_blank">YouTube channel<span class="sr-only"> (opens in a new tab)</span></a></p>
+    <div class="footer-base">
+      <p>© ${new Date().getFullYear()} ${esc(SITE.legalName)} All rights reserved.</p>
+      <p><a href="${SITE.youtube}" rel="noopener" target="_blank">YouTube channel<span class="sr-only"> (opens in a new tab)</span></a></p>
+    </div>
   </div>
 </footer>
 </body>

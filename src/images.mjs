@@ -51,6 +51,7 @@ for (let i = 0; i < light.length; i += 4) {
 await sharp(light, { raw: info }).resize({ width: 400 }).webp({ quality: 90 }).toFile(path.join(outDir, 'mastercraft-logo-light.webp'));
 await sharp(light, { raw: info }).resize({ width: 400 }).png({ compressionLevel: 9 }).toFile(path.join(outDir, 'mastercraft-logo-light.png'));
 await sharp(logoIn).resize({ width: 400 }).png({ compressionLevel: 9 }).toFile(path.join(outDir, 'mastercraft-logo.png'));
+await sharp(logoIn).resize({ width: 400 }).webp({ quality: 92 }).toFile(path.join(outDir, 'mastercraft-logo.webp'));
 // social/sharing image (real photo, 1200x630 crop)
 await sharp(path.join(srcDir, 'machining5.jpg')).resize(1200, 630, { fit: 'cover', position: 'centre' }).jpeg({ quality: 82, mozjpeg: true }).toFile(path.join(outDir, 'mastercraft-engineers-og.jpg'));
 

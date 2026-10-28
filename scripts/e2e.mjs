@@ -79,34 +79,32 @@ for (const w of [1440, 390]) {
   await p.locator('.sub-toggle').focus(); await p.keyboard.press('Enter');
   ok('desktop dropdown opens with keyboard', (await p.locator('.sub-toggle').getAttribute('aria-expanded')) === 'true' && await p.locator('.sub a').first().isVisible());
   await p.keyboard.press('Escape'); ok('dropdown closes with Escape', (await p.locator('.sub-toggle').getAttribute('aria-expanded')) === 'false');
-  // hero: accessible name, spotlight follows the pointer
-  ok('hero h1 has the full accessible name', (await p.locator('h1').getAttribute('aria-label')) === 'Precision mould engineering, from concept to finished component.');
-  const before = await p.evaluate(() => getComputedStyle(document.querySelector('[data-hero]')).getPropertyValue('--mx'));
-  await p.mouse.move(200, 300); await p.mouse.move(260, 320); await p.waitForTimeout(2000);
-  const after = await p.evaluate(() => getComputedStyle(document.querySelector('[data-hero]')).getPropertyValue('--mx'));
-  ok('hero spotlight follows the pointer', before !== after && parseFloat(after) < 60, `${before} -> ${after}`);
-  // process deck: seven cards, sticky stacking, then releases
-  ok('process deck has 7 stages', await p.locator('[data-card]').count() === 7);
-  await p.evaluate(() => document.querySelector('#stage-moulding').scrollIntoView({ block: 'start' })); await p.waitForTimeout(500);
-  const stuck = await p.evaluate(() => { const t = document.querySelector('#stage-cad').getBoundingClientRect().top; const t2 = document.querySelector('#stage-moulding').getBoundingClientRect().top; return [t, t2]; });
-  ok('earlier cards stay stuck near the top while later ones stack over them', stuck[0] > 40 && stuck[0] < 140 && stuck[1] >= stuck[0], JSON.stringify(stuck));
-  ok('stacked cards sink (depth effect applied)', parseFloat(await p.evaluate(() => document.querySelector('#stage-cad').style.getPropertyValue('--d'))) > 0.3);
-  await p.evaluate(() => document.querySelector('#products').scrollIntoView()); await p.waitForTimeout(400);
-  ok('sticky deck releases after the section (page not trapped)', await p.evaluate(() => document.querySelector('#stage-quality-inspection, #stage-inspection').getBoundingClientRect().bottom < 0));
-  // header tucks away on scroll down and returns on scroll up
-  await p.evaluate(() => window.scrollTo(0, 3000)); await p.waitForTimeout(300); await p.evaluate(() => window.scrollTo(0, 3400)); await p.waitForTimeout(500);
-  ok('header hides while scrolling down', await p.evaluate(() => document.querySelector('[data-header]').classList.contains('is-hidden')));
-  await p.evaluate(() => window.scrollTo(0, 3100)); await p.waitForTimeout(500);
-  ok('header returns when scrolling up', await p.evaluate(() => !document.querySelector('[data-header]').classList.contains('is-hidden')));
+  // hero + floating header
+  ok('hero h1 carries the full headline', /Precision\s+mould engineering,\s+from concept to finished component\./.test((await p.locator('h1').innerText()).replace(/\s+/g, ' ')));
+  const bar0 = await p.evaluate(() => document.querySelector('.bar').getBoundingClientRect().top);
+  await p.evaluate(() => window.scrollTo(0, 2500)); await p.waitForTimeout(500);
+  const bar1 = await p.evaluate(() => document.querySelector('.bar').getBoundingClientRect().top);
+  ok('pill header floats and stays visible while scrolling', bar0 > 5 && bar1 > 5 && bar1 < 40, `${bar0} / ${bar1}`);
+  ok('header gains its stuck state when scrolled', await p.evaluate(() => document.querySelector('[data-header]').classList.contains('is-stuck')));
   ok('scroll progress bar advances', parseFloat(await p.evaluate(() => document.querySelector('[data-progress]').style.getPropertyValue('--p'))) > 0.1);
-  // product rail
-  await p.evaluate(() => document.querySelector('[data-rail]').scrollIntoView({ block: 'center' })); await p.waitForTimeout(400);
-  await p.locator('[data-rail-next]').click(); await p.waitForTimeout(900);
-  ok('product rail next button scrolls the rail', await p.evaluate(() => document.querySelector('[data-rail]').scrollLeft) > 100);
-  ok('product rail is keyboard focusable', await p.evaluate(() => document.querySelector('[data-rail]').tabIndex === 0));
-  // counters end on the published values
-  await p.evaluate(() => document.querySelector('.stats').scrollIntoView({ block: 'center' })); await p.waitForTimeout(2200);
-  const stats = await p.locator('.stats').innerText(); ok('stats show the published values after counting', /45\s*–\s*150/.test(stats) && /0\.5\s*–\s*300/.test(stats) && /1\.3\s*–\s*18\.5/.test(stats) && /\b17\b/.test(stats), stats.replace(/\s+/g, ' '));
+  // bento numbers end on the published values
+  await p.evaluate(() => document.querySelector('.bento').scrollIntoView({ block: 'center' })); await p.waitForTimeout(2300);
+  const bento = (await p.locator('.bento').innerText()).replace(/\s+/g, ' ');
+  ok('bento shows the published values after counting', /45\s*–\s*150/.test(bento) && /0\.5\s*–\s*300/.test(bento) && /\b17\b/.test(bento) && /\b64\b/.test(bento), bento.slice(0, 200));
+  // process timeline: 7 stages, line draws, stages light up, nothing sticky/trapping
+  ok('process timeline has 7 stages', await p.locator('[data-step]').count() === 7);
+  await p.evaluate(() => document.querySelector('#stage-moulding').scrollIntoView({ block: 'center' })); await p.waitForTimeout(700);
+  ok('timeline line has drawn part-way and reached stages are lit', parseFloat(await p.evaluate(() => document.querySelector('[data-tl-prog]').style.getPropertyValue('--p'))) > 0.5 && await p.locator('#stage-assembly.is-on').count() === 1 && await p.locator('#stage-inspection.is-on').count() === 0);
+  await p.evaluate(() => document.querySelector('#products').scrollIntoView()); await p.waitForTimeout(400);
+  ok('page continues past the timeline (nothing sticky traps scrolling)', await p.evaluate(() => document.querySelector('#stage-inspection').getBoundingClientRect().bottom < 0));
+  // product explorer tabs
+  const tabs = p.locator('[role="tab"]');
+  ok('explorer has 4 tabs, first selected, one panel visible', await tabs.count() === 4 && (await tabs.nth(0).getAttribute('aria-selected')) === 'true' && await p.locator('[role="tabpanel"]:visible').count() === 1);
+  await tabs.nth(2).click(); await p.waitForTimeout(300);
+  ok('clicking a tab swaps the panel', (await tabs.nth(2).getAttribute('aria-selected')) === 'true' && await p.locator('#panel-components').isVisible() && !(await p.locator('#panel-large').isVisible()));
+  await tabs.nth(2).focus(); await p.keyboard.press('ArrowDown'); await p.waitForTimeout(200);
+  ok('arrow keys move through the tabs', (await tabs.nth(3).getAttribute('aria-selected')) === 'true' && await p.evaluate(() => document.activeElement.id) === 'tab-twok');
+  await p.keyboard.press('Home'); ok('Home selects the first tab', (await tabs.nth(0).getAttribute('aria-selected')) === 'true');
   await ctx.close();
 }
 {
@@ -153,16 +151,16 @@ for (const w of [1440, 390]) {
 { // reduced motion: everything visible, no hidden-until-reveal state
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' }); const p = await ctx.newPage(); await p.goto(BASE + '/');
   await p.waitForTimeout(300);
-  const st = await p.evaluate(() => { const w = document.querySelector('.ch'); const rv = [...document.querySelectorAll('.reveal')].map(e => getComputedStyle(e).opacity); const m = document.querySelector('.marquee__track'); return { tr: getComputedStyle(w).transform, minOp: Math.min(...rv), marquee: getComputedStyle(m).animationName, t: getComputedStyle(document.querySelector('.hero__t')).opacity, prog: document.documentElement.classList.contains('has-cursor') }; });
-  ok('reduced motion: headline letters static', st.tr === 'none' || st.tr === 'matrix(1, 0, 0, 1, 0, 0)', st.tr);
-  ok('reduced motion: reveals visible, marquee stopped, no cursor effect', st.minOp === 1 && st.marquee === 'none' && st.t === '1' && !st.prog, JSON.stringify(st));
+  const st = await p.evaluate(() => { const rv = [...document.querySelectorAll('.reveal, .rise')].map(e => getComputedStyle(e).opacity); const m = getComputedStyle(document.querySelector('.hero__h mark'), '::after').transform; return { minOp: Math.min(...rv), brush: m, main: getComputedStyle(document.querySelector('.hero__main')).opacity }; });
+  ok('reduced motion: everything visible without animating in', st.minOp === 1 && st.main === '1', JSON.stringify(st));
+  ok('reduced motion: headline highlight drawn immediately', st.brush === 'none' || st.brush === 'matrix(1, 0, 0, 1, 0, 0)', st.brush);
   await ctx.close();
 }
 { // no JavaScript: content, nav and specs still available
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, javaScriptEnabled: false }); const p = await ctx.newPage(); await p.goto(BASE + '/');
   ok('no-JS: hero headline visible', await p.locator('h1').isVisible());
   ok('no-JS: process steps visible', await p.locator('#stage-machining .h3').isVisible() && await p.locator('#stage-machining img').isVisible());
-  ok('no-JS: product rail links visible', await p.locator('.pcard').first().isVisible());
+  ok('no-JS: all four product panels are visible (tabs hidden)', await p.locator('.panel:visible').count() === 4 && await p.locator('.explorer__tabs').isHidden());
   ok('no-JS: nav links visible', await p.locator('.nav-list a', { hasText: 'Contact' }).isVisible());
   await p.goto(BASE + '/injection-moulds/'); ok('no-JS: anatomy list readable, no dead hotspots', await p.locator('#a1').isVisible() && await p.locator('.hotspot').first().isHidden());
   await p.goto(BASE + '/contact/'); ok('no-JS: form posts natively', (await p.locator('form').getAttribute('action')) === '/api/contact');
